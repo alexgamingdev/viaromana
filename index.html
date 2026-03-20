@@ -1,82 +1,28 @@
 <!DOCTYPE html>
-<html lang="la">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Via Romana | Disce Linguam Latinam</title>
+    <meta charset="UTF-8"><title>Via Romana | Das Imperium der Sprache</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com');
         .font-roman { font-family: 'Cinzel', serif; }
-        body { font-family: 'Fauna One', serif; background-color: #fdfaf3; }
-        .hero-gradient { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com'); background-size: cover; background-position: center; }
+        body { font-family: 'Libre Baskerville', serif; background: #fdfaf3; }
+        .hero { background: linear-gradient(rgba(44,4,4,0.8), rgba(44,4,4,0.8)), url('https://images.unsplash.com'); background-size: cover; }
     </style>
 </head>
-<body class="text-stone-800">
-
-    <!-- Navigation -->
-    <nav class="p-6 flex justify-between items-center border-b border-stone-200 bg-white sticky top-0 z-50">
-        <div class="text-2xl font-roman font-bold tracking-widest text-red-900">VIA ROMANA</div>
-        <div class="space-x-6 hidden md:block">
-            <a href="#spiel" class="hover:text-red-700 transition">Ludus</a>
-            <a href="#lernen" class="hover:text-red-700 transition">Discere</a>
-            <a href="#magister" class="hover:text-red-700 transition font-bold text-red-800">Magister</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="hero-gradient h-[60vh] flex items-center justify-center text-center text-white px-4">
-        <div>
-            <h1 class="text-5xl md:text-7xl font-roman mb-4 tracking-tighter">Omnes viae Romam ducunt</h1>
-            <p class="text-xl md:text-2xl max-w-2xl mx-auto italic">Lerne Latein spielerisch auf den Straßen des Imperiums.</p>
-            <div class="mt-8 space-x-4">
-                <a href="https://play.viaromana.education" class="bg-red-800 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold transition duration-300 inline-block">Jetzt Spielen</a>
-            </div>
+<body>
+    <header class="hero h-screen flex flex-col items-center justify-center text-white text-center px-4">
+        <h1 class="text-6xl md:text-8xl font-roman mb-6 tracking-tighter text-yellow-500">VIA ROMANA</h1>
+        <p class="text-xl md:text-2xl max-w-2xl italic mb-12">Handeln wie Crassus, sprechen wie Cicero. Das erste Monopoly, das Latein lebendig macht.</p>
+        <div class="flex gap-4">
+            <a href="https://play.viaromana.alexgamingdev.me" class="bg-yellow-600 px-8 py-3 rounded font-bold hover:bg-yellow-500 transition">JETZT SPIELEN</a>
+            <a href="#info" class="border border-white px-8 py-3 rounded font-bold hover:bg-white/10 transition">MEHR ERFAHREN</a>
         </div>
     </header>
-
-    <!-- Info Sektion -->
-    <main class="max-w-5xl mx-auto py-16 px-6">
-        <section id="spiel" class="grid md:grid-cols-2 gap-12 items-center mb-24">
-            <div>
-                <h2 class="text-3xl font-roman text-red-900 mb-4">Das Spielprinzip</h2>
-                <p class="text-lg leading-relaxed text-stone-600">
-                    Via Romana kombiniert das bewährte Handelssystem eines Brettspiel-Klassikers mit der Welt der Antike. 
-                    Erwirb Grundstücke auf dem Forum Romanum, baue Thermen und Aquädukte – aber nur, wenn du die lateinischen Phrasen beherrschst!
-                </p>
-            </div>
-            <div class="bg-stone-200 h-64 rounded-2xl flex items-center justify-center text-stone-400 italic border-2 border-dashed border-stone-300">
-                [ Screenshot deines Spiels hier ]
-            </div>
-        </section>
-
-        <!-- Subdomains Info -->
-        <section id="lernen" class="bg-white p-8 rounded-3xl shadow-xl border border-stone-100">
-            <h2 class="text-center text-3xl font-roman text-red-900 mb-12">Unsere digitalen Welten</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="text-3xl mb-2">🎮</div>
-                    <h3 class="font-bold text-xl mb-2">play.</h3>
-                    <p class="text-sm text-stone-500">Direkt im Browser spielen gegen Freund*innen.</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl mb-2">🎓</div>
-                    <h3 class="font-bold text-xl mb-2">magister.</h3>
-                    <p class="text-sm text-stone-500">Vokabellisten und Übungen für den Unterricht.</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl mb-2">📜</div>
-                    <h3 class="font-bold text-xl mb-2">rules.</h3>
-                    <p class="text-sm text-stone-500">Das Regelwerk der Via Romana auf einen Blick.</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-stone-900 text-stone-400 py-12 px-6 text-center">
-        <p class="font-roman text-white mb-4 italic">© MMXXVI VIA ROMANA TEAM</p>
-        <p class="text-xs">Digitalisiert für die nächste Generation von Latinisten.</p>
-    </footer>
-
+    <section id="info" class="py-20 max-w-5xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
+        <div><h3 class="font-roman text-red-900 text-xl mb-2">SPIELPRINZIP</h3><p class="text-sm">Erwerbe Foren, Thermen und Villen durch taktisches Geschick und Sprachwissen.</p></div>
+        <div><h3 class="font-roman text-red-900 text-xl mb-2">BILDUNG</h3><p class="text-sm">Integrierte Vokabel-Abfragen und Grammatik-Herausforderungen für Schüler.</p></div>
+        <div><h3 class="font-roman text-red-900 text-xl mb-2">STRATEGIE</h3><p class="text-sm">Ein Proof-of-Concept für moderne Gamification im altsprachlichen Unterricht.</p></div>
+    </section>
 </body>
 </html>
