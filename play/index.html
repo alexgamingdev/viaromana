@@ -1,18 +1,286 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8"><title>Via Romana | Game Interface</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Romana | Spielfeld</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { background: #0c0c0c; color: #d4af37; font-family: monospace; }</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --roman-red:  #8B1A1A;
+            --roman-gold: #C9A84C;
+            --roman-dark: #120900;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Cinzel', serif; background: var(--roman-dark); color: var(--roman-gold); margin: 0; min-height: 100vh; }
+
+        /* Nav */
+        .top-bar {
+            background: rgba(18,9,0,.9);
+            border-bottom: 2px solid rgba(201,168,76,.4);
+            padding: .75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Board canvas */
+        .board-wrap {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .board {
+            background: #1c1005;
+            border: 2px solid rgba(201,168,76,.35);
+            border-radius: 4px;
+            box-shadow: 0 0 60px rgba(201,168,76,.08), inset 0 0 40px rgba(0,0,0,.4);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle pattern overlay */
+        .board::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 18px,
+                rgba(201,168,76,.025) 18px,
+                rgba(201,168,76,.025) 19px
+            );
+            pointer-events: none;
+        }
+
+        /* Path track */
+        .track {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .field {
+            width: 52px;
+            height: 52px;
+            border: 1px solid rgba(201,168,76,.25);
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: .55rem;
+            letter-spacing: .04em;
+            text-align: center;
+            cursor: default;
+            transition: border-color .2s, box-shadow .2s;
+            position: relative;
+            background: rgba(201,168,76,.03);
+        }
+        .field:hover { border-color: rgba(201,168,76,.6); box-shadow: 0 0 8px rgba(201,168,76,.15); }
+
+        /* Field types */
+        .field-start  { border-color: #4caf50; background: rgba(76,175,80,.12); }
+        .field-end    { border-color: var(--roman-gold); background: rgba(201,168,76,.15); animation: pulseGold 2s ease-in-out infinite; }
+        .field-loc    { border-color: var(--roman-red); background: rgba(139,26,26,.18); }
+        .field-event  { border-color: #7b5ea7; background: rgba(123,94,167,.12); }
+        .field-plain  {}
+
+        @keyframes pulseGold {
+            0%,100% { box-shadow: 0 0 6px rgba(201,168,76,.3); }
+            50%      { box-shadow: 0 0 20px rgba(201,168,76,.7); }
+        }
+
+        .field-icon { font-size: 1.1rem; line-height: 1; }
+        .field-label { font-size: .42rem; letter-spacing: .05em; margin-top: 2px; opacity: .8; max-width: 48px; }
+
+        /* Legend */
+        .legend { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; justify-content: center; font-size: .7rem; }
+        .leg-item { display: flex; align-items: center; gap: .35rem; }
+        .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* Dice section */
+        .dice-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .dice {
+            width: 64px;
+            height: 64px;
+            background: #fff;
+            border: 3px solid var(--roman-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+            color: #1a0d05;
+            user-select: none;
+        }
+        .dice:hover { transform: scale(1.08); box-shadow: 0 0 20px rgba(201,168,76,.35); }
+        .dice.rolling { animation: rollDice .5s ease-in-out; }
+
+        @keyframes rollDice {
+            0%,100% { transform: rotate(0deg) scale(1); }
+            25%      { transform: rotate(-15deg) scale(1.1); }
+            75%      { transform: rotate(15deg) scale(1.1); }
+        }
+
+        .btn-roll {
+            background: var(--roman-red);
+            color: #fff;
+            border: 2px solid transparent;
+            padding: .7rem 2rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: .15em;
+            font-size: .85rem;
+            cursor: pointer;
+            transition: all .3s;
+            text-transform: uppercase;
+        }
+        .btn-roll:hover { background: #a52222; border-color: var(--roman-gold); }
+
+        /* Status bar */
+        .status-bar {
+            background: rgba(201,168,76,.07);
+            border: 1px solid rgba(201,168,76,.2);
+            border-radius: 3px;
+            padding: .6rem 1.2rem;
+            font-size: .75rem;
+            letter-spacing: .1em;
+            color: rgba(201,168,76,.8);
+            text-align: center;
+            min-height: 2.2rem;
+        }
+    </style>
 </head>
-<body class="h-screen flex flex-col items-center justify-center overflow-hidden">
-    <div class="mb-8 text-center">
-        <h2 class="text-3xl font-bold tracking-[0.5em] uppercase mb-2">Via Romana Core</h2>
-        <div class="h-1 w-full bg-amber-900"><div class="bg-amber-500 h-full w-1/3 animate-pulse"></div></div>
+<body>
+
+    <!-- Top bar -->
+    <div class="top-bar">
+        <a href="../" class="text-amber-400 hover:text-amber-300 transition text-sm tracking-widest">← VIA ROMANA</a>
+        <span class="text-xs tracking-widest" style="color:rgba(201,168,76,.5);">SPIELFELD</span>
+        <span class="text-xs" style="color:rgba(201,168,76,.4);">Discendo vincimus</span>
     </div>
-    <div id="game-canvas" class="w-[90vw] h-[70vh] bg-stone-900 border-2 border-amber-900/50 flex items-center justify-center shadow-[0_0_50px_rgba(212,175,55,0.1)]">
-        <p class="text-stone-500 italic uppercase tracking-widest">Initialisiere Spielfeld...</p>
+
+    <div class="board-wrap">
+
+        <!-- Title -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl tracking-widest mb-1" style="color:var(--roman-gold);">VIA ROMANA</h1>
+            <p class="text-xs tracking-widest" style="color:rgba(201,168,76,.5);">SPIELFELD DER ANTIKEN WELT</p>
+        </div>
+
+        <!-- Board -->
+        <div class="board">
+            <div class="track" id="track"></div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="leg-item"><div class="leg-dot" style="background:#4caf50;"></div> Start / Ziel</div>
+                <div class="leg-item"><div class="leg-dot" style="background:var(--roman-red);"></div> Ortsfeld</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#7b5ea7;"></div> Ereignisfeld</div>
+                <div class="leg-item"><div class="leg-dot" style="background:rgba(201,168,76,.3);"></div> Normalfeld</div>
+            </div>
+        </div>
+
+        <!-- Dice & Controls -->
+        <div class="dice-area">
+            <div class="status-bar" id="status">Wähle eine Spielfigur und würfle, um zu beginnen.</div>
+            <div class="dice" id="dice" title="Würfel" role="button" aria-label="Würfel">&#x2684;</div>
+            <button class="btn-roll" id="rollBtn" onclick="roll()">WÜRFELN</button>
+        </div>
+
     </div>
-    <a href="../" class="mt-8 text-xs hover:underline opacity-50 uppercase">Zurück zur Hauptseite</a>
+
+    <script>
+    // ── Board definition ──────────────────────────────────────────────
+    const DICE_FACES = ['&#x2680;','&#x2681;','&#x2682;','&#x2683;','&#x2684;','&#x2685;'];
+
+    const fields = [
+        { type:'start',  icon:'🏁', label:'START' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'loc',    icon:'🌾', label:'VILLA RUSTICA' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'loc',    icon:'🏙️', label:'INSULAE' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'loc',    icon:'📚', label:'SCHULE' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'loc',    icon:'🏛️', label:'FORUM ROM.' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'loc',    icon:'🏟️', label:'CIRCUS MAX.' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'event',  icon:'🎴', label:'EREIGNIS' },
+        { type:'plain',  icon:'',          label:'' },
+        { type:'end',    icon:'🏆', label:'ZIEL – VIKTORIA!' },
+    ];
+
+    // ── Render board ──────────────────────────────────────────────────
+    const track = document.getElementById('track');
+    fields.forEach((f, i) => {
+        const el = document.createElement('div');
+        el.className = 'field field-' + (f.type === 'end' ? 'end' : f.type === 'start' ? 'start' : f.type === 'loc' ? 'loc' : f.type === 'event' ? 'event' : 'plain');
+        el.id = 'field-' + i;
+        el.title = f.label || ('Feld ' + (i + 1));
+        el.innerHTML = (f.icon ? '<span class="field-icon">' + f.icon + '</span>' : '<span style="color:rgba(201,168,76,.2);font-size:.8rem;">' + (i+1) + '</span>')
+            + (f.label ? '<span class="field-label">' + f.label + '</span>' : '');
+        track.appendChild(el);
+    });
+
+    // ── Simple dice roll demo ─────────────────────────────────────────
+    const diceEl  = document.getElementById('dice');
+    const statusEl = document.getElementById('status');
+    let rolling = false;
+
+    function roll() {
+        if (rolling) return;
+        rolling = true;
+        diceEl.classList.add('rolling');
+        let count = 0;
+        const interval = setInterval(() => {
+            diceEl.innerHTML = DICE_FACES[Math.floor(Math.random() * 6)];
+            count++;
+            if (count >= 10) {
+                clearInterval(interval);
+                const result = Math.floor(Math.random() * 6) + 1;
+                diceEl.innerHTML = DICE_FACES[result - 1];
+                diceEl.classList.remove('rolling');
+                statusEl.innerHTML = 'Gewürfelt: <strong style="color:var(--roman-gold);">' + result + '</strong> &mdash; Bewege deine Figur ' + result + ' Felder vor!';
+                rolling = false;
+            }
+        }, 60);
+    }
+
+    diceEl.addEventListener('click', roll);
+    </script>
 </body>
 </html>
