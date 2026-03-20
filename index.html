@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Via Romana | Discendo Vincimus</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -235,11 +237,16 @@
 
     <!-- Navigation -->
     <nav class="roman-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4">
-        <a href="/" class="font-roman text-amber-400 font-bold tracking-widest text-lg hover:text-amber-300 transition">VIA ROMANA</a>
-        <div class="flex gap-6 text-xs font-roman tracking-widest">
-            <a href="play/"    class="text-amber-400/60 hover:text-amber-400 transition">LUDUS</a>
-            <a href="rules/"   class="text-amber-400/60 hover:text-amber-400 transition">REGELN</a>
-            <a href="magister/" class="text-amber-400/60 hover:text-amber-400 transition">MAGISTER</a>
+        <a href="/" class="font-roman text-amber-400 font-bold tracking-widest text-lg hover:text-amber-300 transition" style="display:flex;align-items:center;gap:.55rem;">
+            <img src="assets/logo.svg" alt="Via Romana Logo" style="width:1.45rem;height:1.45rem;">
+            <span>VIA ROMANA</span>
+        </a>
+        <div class="flex gap-6 text-xs font-roman tracking-widest items-center">
+            <a id="navPlay" href="play/"    class="text-amber-400/60 hover:text-amber-400 transition">LUDUS</a>
+            <a id="navRules" href="rules/"   class="text-amber-400/60 hover:text-amber-400 transition">REGELN</a>
+            <a id="navMagister" href="magister/" class="text-amber-400/60 hover:text-amber-400 transition">MAGISTER</a>
+            <button id="langDeBtn" class="text-amber-400/80 border border-amber-400/40 px-2 py-1">DE</button>
+            <button id="langEnBtn" class="text-amber-400/80 border border-amber-400/40 px-2 py-1">EN</button>
         </div>
     </nav>
 
@@ -444,8 +451,8 @@
                 <em style="color:#C9A84C; font-style:normal; font-family:'Cinzel',serif;">Viktoria!</em>
             </p>
             <div class="flex flex-wrap justify-center gap-4">
-                <a href="play/"    class="btn-primary">LUDUS (SPIELEN)</a>
-                <a href="rules/"   class="btn-secondary">REGELN</a>
+                <a id="ctaPlay" href="play/"    class="btn-primary">LUDUS (SPIELEN)</a>
+                <a id="ctaRules" href="rules/"   class="btn-secondary">REGELN</a>
                 <a href="magister/" class="btn-secondary">MAGISTER</a>
             </div>
         </div>
@@ -532,7 +539,7 @@
     <section class="dark-strip py-16 px-6">
         <div class="max-w-4xl mx-auto">
             <div class="section-badge" style="color:var(--roman-gold);">⊛</div>
-            <h2 class="font-roman text-3xl text-center mb-10" style="color:var(--roman-gold);">Spielprinzip</h2>
+            <h2 id="howToTitle" class="font-roman text-3xl text-center mb-10" style="color:var(--roman-gold);">Spielprinzip</h2>
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="pillar-card">
                     <div class="text-4xl mb-4">🎲</div>
@@ -560,7 +567,7 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <a href="rules/" class="btn-secondary">Alle Regeln lesen →</a>
+                <a id="allRulesBtn" href="rules/" class="btn-secondary">Alle Regeln lesen →</a>
             </div>
         </div>
     </section>
@@ -573,6 +580,44 @@
     </footer>
 
     <script>
+        (function () {
+            const TXT = {
+                de: {
+                    title: 'Via Romana | Discendo Vincimus',
+                    navPlay: 'LUDUS',
+                    navRules: 'REGELN',
+                    navMagister: 'MAGISTER',
+                    ctaPlay: 'LUDUS (SPIELEN)',
+                    ctaRules: 'REGELN',
+                    howToTitle: 'Spielprinzip',
+                    allRulesBtn: 'Alle Regeln lesen →'
+                },
+                en: {
+                    title: 'Via Romana | Discendo Vincimus',
+                    navPlay: 'PLAY',
+                    navRules: 'RULES',
+                    navMagister: 'MAGISTER',
+                    ctaPlay: 'PLAY NOW',
+                    ctaRules: 'RULES',
+                    howToTitle: 'How To Play',
+                    allRulesBtn: 'Read all rules →'
+                }
+            };
+            function applyLang(lang) {
+                localStorage.setItem('viaromana_lang', lang);
+                const t = TXT[lang] || TXT.de;
+                document.documentElement.lang = lang;
+                document.title = t.title;
+                for (const id of Object.keys(t)) {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = t[id];
+                }
+            }
+            document.getElementById('langDeBtn')?.addEventListener('click', () => applyLang('de'));
+            document.getElementById('langEnBtn')?.addEventListener('click', () => applyLang('en'));
+            applyLang(localStorage.getItem('viaromana_lang') || 'de');
+        })();
+
         // Generate random twinkling stars
         const container = document.getElementById('stars');
         for (let i = 0; i < 90; i++) {

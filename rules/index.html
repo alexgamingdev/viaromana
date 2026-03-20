@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regeln | Via Romana</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+    <link rel="apple-touch-icon" href="../assets/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -330,14 +332,21 @@
 
     <!-- Navigation -->
     <div class="top-bar">
-        <a href="../">← VIA ROMANA</a>
-        <span class="label">CODEX REGULARUM</span>
+        <a href="../" style="display:flex;align-items:center;gap:.45rem;">
+            <img src="../assets/logo.svg" alt="Via Romana Logo" style="width:1.05rem;height:1.05rem;">
+            <span>← VIA ROMANA</span>
+        </a>
+        <div class="label" style="display:flex;align-items:center;gap:.55rem;">
+            <span id="rulesNavLabel">CODEX REGULARUM</span>
+            <button id="langDeBtn" style="font-size:.6rem;border:1px solid rgba(201,168,76,.45);padding:.15rem .4rem;color:rgba(201,168,76,.8);">DE</button>
+            <button id="langEnBtn" style="font-size:.6rem;border:1px solid rgba(201,168,76,.45);padding:.15rem .4rem;color:rgba(201,168,76,.8);">EN</button>
+        </div>
     </div>
 
     <!-- Page Header -->
     <header class="page-header">
         <div class="eyebrow">✦ CODEX REGULARUM ✦</div>
-        <h1>Die Gesetze Roms</h1>
+        <h1 id="rulesTitle">Die Gesetze Roms</h1>
         <p class="sub">Discendo vincimus – Durch Lernen siegen wir.</p>
     </header>
 
@@ -347,7 +356,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">I</span>
-                <h2 class="card-title">Das Spiel</h2>
+                <h2 id="card1" class="card-title">Das Spiel</h2>
             </div>
             <p class="leading-relaxed mb-4">
                 <strong>Via Romana</strong> ist ein Brettspiel, bei dem die Spieler durch das antike Rom reisen
@@ -368,7 +377,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">II</span>
-                <h2 class="card-title">Ziel des Spiels</h2>
+                <h2 id="card2" class="card-title">Ziel des Spiels</h2>
             </div>
             <p>
                 Ziel ist es, als Erster das Ende des Spielfelds zu erreichen und dabei sein Wissen in Latein
@@ -383,7 +392,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">III</span>
-                <h2 class="card-title">Spielvorbereitung</h2>
+                <h2 id="card3" class="card-title">Spielvorbereitung</h2>
             </div>
             <ul class="roman-list">
                 <li>Jeder Spieler sucht sich eine <strong>Spielfigur</strong> aus.</li>
@@ -398,7 +407,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">IV</span>
-                <h2 class="card-title">Der Spielzug</h2>
+                <h2 id="card4" class="card-title">Der Spielzug</h2>
             </div>
             <p style="margin-bottom:.8rem;">
                 An seinem Zug würfelt ein Spieler und bewegt seine Figur die entsprechende Anzahl an Feldern
@@ -419,7 +428,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">V</span>
-                <h2 class="card-title">Orte &amp; Lektionsfragen</h2>
+                <h2 id="card5" class="card-title">Orte &amp; Lektionsfragen</h2>
             </div>
             <p style="margin-bottom:.4rem;">
                 Wenn ein Spieler an einem der folgenden Orte <strong>vorbeikommt</strong>, muss er
@@ -445,7 +454,7 @@
         <section class="rule-card gold-accent">
             <div class="card-header">
                 <span class="rule-num gold-num">VI</span>
-                <h2 class="card-title">Die Schule – Grammatikpflicht</h2>
+                <h2 id="card6" class="card-title">Die Schule – Grammatikpflicht</h2>
             </div>
             <div class="highlight-box">
                 <p>
@@ -466,7 +475,7 @@
         <section class="rule-card">
             <div class="card-header">
                 <span class="rule-num">VII</span>
-                <h2 class="card-title">Spielende &amp; Sieg</h2>
+                <h2 id="card7" class="card-title">Spielende &amp; Sieg</h2>
             </div>
             <p>
                 Das Spiel endet, sobald der erste Spieler das <strong>Zielfeld</strong> am Ende der
@@ -481,7 +490,7 @@
         <!-- CTA -->
         <div class="cta-wrap">
             <p class="cta-label">BEREIT FÜR DIE ERSTE RUNDE?</p>
-            <a href="../play/" class="btn-play">AD LUDUM! (ZUM SPIEL)</a>
+            <a id="playBtn" href="../play/" class="btn-play">AD LUDUM! (ZUM SPIEL)</a>
         </div>
 
     </main>
@@ -492,6 +501,50 @@
     </footer>
 
     <script>
+        (function () {
+            const TXT = {
+                de: {
+                    title: 'Regeln | Via Romana',
+                    rulesNavLabel: 'CODEX REGULARUM',
+                    rulesTitle: 'Die Gesetze Roms',
+                    card1: 'Das Spiel',
+                    card2: 'Ziel des Spiels',
+                    card3: 'Spielvorbereitung',
+                    card4: 'Der Spielzug',
+                    card5: 'Orte & Lektionsfragen',
+                    card6: 'Die Schule – Grammatikpflicht',
+                    card7: 'Spielende & Sieg',
+                    playBtn: 'AD LUDUM! (ZUM SPIEL)'
+                },
+                en: {
+                    title: 'Rules | Via Romana',
+                    rulesNavLabel: 'CODEX OF RULES',
+                    rulesTitle: 'The Laws of Rome',
+                    card1: 'The Game',
+                    card2: 'Game Objective',
+                    card3: 'Setup',
+                    card4: 'Turns',
+                    card5: 'Places & Lesson Questions',
+                    card6: 'School – Grammar Requirement',
+                    card7: 'End of Game & Victory',
+                    playBtn: 'AD LUDUM! (PLAY NOW)'
+                }
+            };
+            function applyLang(lang) {
+                localStorage.setItem('viaromana_lang', lang);
+                const t = TXT[lang] || TXT.de;
+                document.documentElement.lang = lang;
+                document.title = t.title;
+                for (const id of Object.keys(t)) {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = t[id];
+                }
+            }
+            document.getElementById('langDeBtn')?.addEventListener('click', () => applyLang('de'));
+            document.getElementById('langEnBtn')?.addEventListener('click', () => applyLang('en'));
+            applyLang(localStorage.getItem('viaromana_lang') || 'de');
+        })();
+
         /* ── Particle system (same as play page) ── */
         (function () {
             const canvas = document.getElementById('particles');

@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isTeacher() {
+      return request.auth != null;
+    }
+
+    match /materials/{materialId} {
+      allow list: if isTeacher();
+      allow get: if isTeacher() && resource.data.ownerUid == request.auth.uid;
+      allow create: if isTeacher() && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if isTeacher() && resource.data.ownerUid == request.auth.uid;
+      allow delete: if isTeacher() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
