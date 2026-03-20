@@ -68,11 +68,14 @@
         }
         @media (min-width: 960px) {
             .main {
-                flex-direction: row;
-                align-items: flex-start;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 280px;
+                align-items: start;
                 justify-content: center;
                 gap: 2rem;
                 padding: 2rem 1.5rem 3rem;
+                max-width: 1460px;
+                margin: 0 auto;
             }
         }
 
@@ -80,6 +83,9 @@
         .page-title {
             text-align: center;
             width: 100%;
+        }
+        @media (min-width: 960px) {
+            .page-title { grid-column: 1 / -1; }
         }
         .page-title h1 {
             font-size: clamp(1.4rem, 4vw, 2.2rem);
@@ -96,7 +102,7 @@
         /* ═══════════════════════════════════════
            BOARD
         ═══════════════════════════════════════ */
-        .board-section { flex: 1 1 auto; min-width: 0; max-width: 780px; }
+        .board-section { flex: 1 1 auto; min-width: 0; width: 100%; max-width: 1140px; }
 
         .board-outer {
             background: #160c03;
@@ -106,7 +112,7 @@
                 0 0 80px rgba(201,168,76,.07),
                 0 20px 60px rgba(0,0,0,.6),
                 inset 0 0 60px rgba(0,0,0,.5);
-            padding: 1rem;
+            padding: 1.25rem;
             position: relative;
             overflow: hidden;
         }
@@ -124,8 +130,8 @@
         /* ── Snake rows ── */
         .board-row {
             display: flex;
-            gap: 5px;
-            margin-bottom: 5px;
+            gap: 7px;
+            margin-bottom: 7px;
         }
         .board-row:last-child { margin-bottom: 0; }
         .board-row.reverse { flex-direction: row-reverse; }
@@ -151,13 +157,14 @@
             flex: 1 1 0;
             min-width: 0;
             aspect-ratio: 1;
+            min-height: 74px;
             border-radius: 5px;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: .5rem;
+            font-size: .56rem;
             letter-spacing: .05em;
             text-align: center;
             overflow: hidden;
@@ -335,6 +342,8 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            width: 100%;
+            max-width: 280px;
         }
         @media (max-width: 959px) { .controls { width: 100%; max-width: 480px; } }
 
@@ -354,50 +363,91 @@
             text-transform: uppercase;
         }
 
-        /* ── 3D Dice ── */
+        /* ── 2.5D Dice (klarer Würfel) ── */
         .dice-scene {
-            width: 90px;
-            height: 90px;
-            perspective: 350px;
+            width: 138px;
+            height: 138px;
             margin: 0 auto 1rem;
             cursor: pointer;
-        }
-        .dice-3d {
-            width: 90px;
-            height: 90px;
             position: relative;
-            transform-style: preserve-3d;
-            transform: rotateX(-20deg) rotateY(25deg);
-            transition: transform 1.2s cubic-bezier(.25,.1,.25,1);
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .dice-3d.spin {
-            animation: diceRoll 1s cubic-bezier(.36,.07,.19,.97) forwards;
-        }
-        @keyframes diceRoll {
-            0%   { transform: rotateX(-20deg) rotateY(25deg); }
-            15%  { transform: rotateX(340deg) rotateY(180deg) scale(1.15); }
-            40%  { transform: rotateX(640deg) rotateY(400deg) scale(1.2); }
-            70%  { transform: rotateX(900deg) rotateY(600deg) scale(1.12); }
-            100% { transform: var(--dice-final-rotation); }
+        .dice-scene::after {
+            content: '';
+            position: absolute;
+            width: 112px;
+            height: 22px;
+            left: 50%;
+            bottom: 2px;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at center, rgba(0,0,0,.58) 0%, rgba(0,0,0,0) 72%);
+            filter: blur(3px);
+            pointer-events: none;
         }
 
-        .d-face {
-            position: absolute;
-            width: 90px;
-            height: 90px;
-            border: 2px solid rgba(201,168,76,.55);
+        .dice-2d {
+            --cube-depth: 14px;
+            width: 102px;
+            height: 102px;
+            position: relative;
+            border: 2px solid rgba(201,168,76,.65);
             border-radius: 14px;
-            background: radial-gradient(circle at 35% 30%, #fff 50%, #f0ddb0);
+            background: radial-gradient(circle at 28% 24%, #fffef8 0%, #f2e2ba 62%, #e0c78c 100%);
+            box-shadow:
+                0 14px 26px rgba(0,0,0,.7),
+                inset 0 0 0 1px rgba(255,255,255,.35),
+                inset 0 -9px 14px rgba(0,0,0,.16);
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            padding: 10px;
-            gap: 4px;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+            gap: 6px;
+            padding: 12px;
+            transition: transform .2s ease;
+            overflow: visible;
         }
-        .dot {
+        .dice-2d::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            right: calc(var(--cube-depth) * -1 + 7px);
+            top: calc(var(--cube-depth) * -1);
+            height: var(--cube-depth);
+            border: 2px solid rgba(201,168,76,.5);
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+            background: linear-gradient(to right, #f9efcf 0%, #edd8a7 100%);
+            transform: skewX(-45deg);
+            transform-origin: left bottom;
+            box-shadow: inset 0 -2px 5px rgba(0,0,0,.12);
+        }
+        .dice-2d::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            bottom: calc(var(--cube-depth) * -1 + 7px);
+            right: calc(var(--cube-depth) * -1);
+            width: var(--cube-depth);
+            border: 2px solid rgba(201,168,76,.48);
+            border-left: 0;
+            border-radius: 0 10px 10px 0;
+            background: linear-gradient(to bottom, #d8b874 0%, #bf9958 100%);
+            transform: skewY(-45deg);
+            transform-origin: left top;
+            box-shadow: inset 2px 0 5px rgba(0,0,0,.16);
+        }
+        .dice-2d.spin {
+            animation: diceRoll2d .9s cubic-bezier(.25,.75,.2,1);
+        }
+        @keyframes diceRoll2d {
+            0%   { transform: translate(0,0) scale(1); }
+            22%  { transform: translate(-2px,-8px) scale(1.05); }
+            48%  { transform: translate(2px,-12px) scale(1.1); }
+            72%  { transform: translate(-1px,-5px) scale(1.04); }
+            100% { transform: translate(0,0) scale(1); }
+        }
+        .pip {
             width: 100%;
             aspect-ratio: 1;
             border-radius: 50%;
@@ -406,17 +456,7 @@
             align-self: center;
             justify-self: center;
         }
-        .dot.h { visibility: hidden; }
-
-        /* face transforms: half-size = 45px */
-        .df-front  { transform: translateZ(45px); }
-        .df-back   { transform: rotateY(180deg) translateZ(45px); }
-        .df-right  { transform: rotateY(90deg) translateZ(45px); }
-        .df-left   { transform: rotateY(-90deg) translateZ(45px); }
-        .df-top    { transform: rotateX(90deg) translateZ(45px); }
-        .df-bottom { transform: rotateX(-90deg) translateZ(45px); }
-
-        /* Result rotations to show each face frontally – set via JS inline style */
+        .pip.h { visibility: hidden; }
 
         /* ── Roll button ── */
         .btn-roll {
@@ -516,6 +556,16 @@
         .score-name { color: var(--gold); font-size: .6rem; }
         .score-pos  { color: rgba(201,168,76,.5); font-size: .52rem; }
 
+        @media (max-width: 959px) {
+            .board-section { width: 100%; }
+            .board-outer { padding: .85rem; }
+            .board-row { gap: 5px; margin-bottom: 5px; }
+            .field {
+                min-height: 48px;
+                font-size: .48rem;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -571,45 +621,12 @@
         <div class="panel">
             <div class="panel-title">Würfel</div>
 
-            <!-- 3D Dice -->
+            <!-- 2.5D Dice -->
             <div class="dice-scene" id="diceScene" title="Klicken zum Würfeln" role="button" aria-label="Würfeln">
-                <div class="dice-3d" id="dice3d">
-                    <!-- Face 1 (front): 1 dot -->
-                    <div class="d-face df-front">
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
-                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
-                    </div>
-                    <!-- Face 6 (back): 6 dots -->
-                    <div class="d-face df-back">
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                    </div>
-                    <!-- Face 2 (right): 2 dots -->
-                    <div class="d-face df-right">
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot h"></div>
-                    </div>
-                    <!-- Face 5 (left): 5 dots -->
-                    <div class="d-face df-left">
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                    </div>
-                    <!-- Face 3 (top): 3 dots -->
-                    <div class="d-face df-top">
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot h"></div>
-                    </div>
-                    <!-- Face 4 (bottom): 4 dots -->
-                    <div class="d-face df-bottom">
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
-                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
-                    </div>
+                <div class="dice-2d" id="dice2d" aria-live="polite" aria-label="Würfel zeigt 1">
+                    <div class="pip h" data-p="1"></div><div class="pip h" data-p="2"></div><div class="pip h" data-p="3"></div>
+                    <div class="pip h" data-p="4"></div><div class="pip" data-p="5"></div><div class="pip h" data-p="6"></div>
+                    <div class="pip h" data-p="7"></div><div class="pip h" data-p="8"></div><div class="pip h" data-p="9"></div>
                 </div>
             </div>
 
@@ -856,16 +873,26 @@ function updateScoreDisplay() {
 }
 
 /* ═══════════════════════════════════════════════
-   3D DICE ROLL
+   2.5D DICE ROLL
 ═══════════════════════════════════════════════ */
-const DICE_ROTATIONS = {
-    1: 'rotateX(-20deg) rotateY(25deg)',    // face 1 = front
-    2: 'rotateX(-20deg) rotateY(-65deg)',   // face 2 = right side
-    3: 'rotateX(-110deg) rotateY(25deg)',   // face 3 = top
-    4: 'rotateX(70deg) rotateY(25deg)',     // face 4 = bottom
-    5: 'rotateX(-20deg) rotateY(115deg)',   // face 5 = left side
-    6: 'rotateX(-20deg) rotateY(205deg)',   // face 6 = back
+const DICE_PIPS = {
+    1: [5],
+    2: [3, 7],
+    3: [3, 5, 7],
+    4: [1, 3, 7, 9],
+    5: [1, 3, 5, 7, 9],
+    6: [1, 3, 4, 6, 7, 9],
 };
+
+function setDiceFace(value) {
+    const pips = DICE_PIPS[value] || DICE_PIPS[1];
+    document.querySelectorAll('#dice2d .pip').forEach((el) => {
+        const pos = Number(el.getAttribute('data-p'));
+        el.classList.toggle('h', !pips.includes(pos));
+    });
+    const dice = document.getElementById('dice2d');
+    if (dice) dice.setAttribute('aria-label', `Würfel zeigt ${value}`);
+}
 
 function rollDice() {
     if (rolling) return;
@@ -873,20 +900,20 @@ function rollDice() {
     document.getElementById('rollBtn').disabled = true;
 
     const result = Math.floor(Math.random() * 6) + 1;
-    const dice3d = document.getElementById('dice3d');
-
-    // Set the target rotation as inline style (inline overrides class, so use it directly)
-    dice3d.style.setProperty('--dice-final-rotation', DICE_ROTATIONS[result]);
+    const dice2d = document.getElementById('dice2d');
 
     // Trigger spin animation
-    dice3d.classList.remove('spin');
-    void dice3d.offsetWidth; // reflow
-    dice3d.classList.add('spin');
+    dice2d.classList.remove('spin');
+    void dice2d.offsetWidth; // reflow
+    dice2d.classList.add('spin');
 
     document.getElementById('status').innerHTML =
         t().rolling;
 
     setTimeout(() => {
+        setDiceFace(result);
+        dice2d.classList.remove('spin');
+
         // Move token
         const oldPos = positions[activePlayer];
         let newPos   = Math.min(oldPos + result, TOTAL - 1);
@@ -976,6 +1003,7 @@ document.addEventListener('keydown', e => {
 buildBoard();
 buildPlayerUI();
 renderTokens();
+setDiceFace(1);
 
 function applyPlayLanguage(lang) {
     currentLang = lang;
