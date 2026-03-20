@@ -363,100 +363,63 @@
             text-transform: uppercase;
         }
 
-        /* ── 2.5D Dice (klarer Würfel) ── */
-        .dice-scene {
-            width: 138px;
-            height: 138px;
-            margin: 0 auto 1rem;
-            cursor: pointer;
+        /* ── 3D Gold Würfel ── */
+        .scene {
+            width: 100px;
+            height: 100px;
+            perspective: 1000px;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0 auto 2rem;
+            cursor: pointer;
         }
-        .dice-scene::after {
+        .scene::after {
             content: '';
             position: absolute;
-            width: 112px;
-            height: 22px;
-            left: 50%;
-            bottom: 2px;
-            transform: translateX(-50%);
-            background: radial-gradient(ellipse at center, rgba(0,0,0,.58) 0%, rgba(0,0,0,0) 72%);
-            filter: blur(3px);
-            pointer-events: none;
+            width: 80px;
+            height: 15px;
+            bottom: -30px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            filter: blur(8px);
         }
-
-        .dice-2d {
-            --cube-depth: 14px;
-            width: 102px;
-            height: 102px;
+        .cube {
+            width: 100%;
+            height: 100%;
             position: relative;
-            border: 2px solid rgba(201,168,76,.65);
+            transform-style: preserve-3d;
+            transform: rotateX(var(--rx, -22deg)) rotateY(var(--ry, 28deg));
+            transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.35, 1.1);
+        }
+        .face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
             border-radius: 14px;
-            background: radial-gradient(circle at 28% 24%, #fffef8 0%, #f2e2ba 62%, #e0c78c 100%);
-            box-shadow:
-                0 14px 26px rgba(0,0,0,.7),
-                inset 0 0 0 1px rgba(255,255,255,.35),
-                inset 0 -9px 14px rgba(0,0,0,.16);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 6px;
             padding: 12px;
-            transition: transform .2s ease;
-            overflow: visible;
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
         }
-        .dice-2d::before {
-            content: '';
-            position: absolute;
-            left: 7px;
-            right: calc(var(--cube-depth) * -1 + 7px);
-            top: calc(var(--cube-depth) * -1);
-            height: var(--cube-depth);
-            border: 2px solid rgba(201,168,76,.5);
-            border-bottom: 0;
-            border-radius: 10px 10px 0 0;
-            background: linear-gradient(to right, #f9efcf 0%, #edd8a7 100%);
-            transform: skewX(-45deg);
-            transform-origin: left bottom;
-            box-shadow: inset 0 -2px 5px rgba(0,0,0,.12);
-        }
-        .dice-2d::after {
-            content: '';
-            position: absolute;
-            top: 7px;
-            bottom: calc(var(--cube-depth) * -1 + 7px);
-            right: calc(var(--cube-depth) * -1);
-            width: var(--cube-depth);
-            border: 2px solid rgba(201,168,76,.48);
-            border-left: 0;
-            border-radius: 0 10px 10px 0;
-            background: linear-gradient(to bottom, #d8b874 0%, #bf9958 100%);
-            transform: skewY(-45deg);
-            transform-origin: left top;
-            box-shadow: inset 2px 0 5px rgba(0,0,0,.16);
-        }
-        .dice-2d.spin {
-            animation: diceRoll2d .9s cubic-bezier(.25,.75,.2,1);
-        }
-        @keyframes diceRoll2d {
-            0%   { transform: translate(0,0) scale(1); }
-            22%  { transform: translate(-2px,-8px) scale(1.05); }
-            48%  { transform: translate(2px,-12px) scale(1.1); }
-            72%  { transform: translate(-1px,-5px) scale(1.04); }
-            100% { transform: translate(0,0) scale(1); }
-        }
+        .f-1 { background: linear-gradient(145deg, #f4e5bf, #d5b06f); transform: rotateY(0deg) translateZ(50px); }
+        .f-6 { background: linear-gradient(145deg, #d5b06f, #9c733a); transform: rotateY(180deg) translateZ(50px); }
+        .f-3 { background: linear-gradient(145deg, #f4e5bf, #d5b06f); transform: rotateY(90deg) translateZ(50px); }
+        .f-4 { background: linear-gradient(145deg, #d5b06f, #9c733a); transform: rotateY(-90deg) translateZ(50px); }
+        .f-2 { background: linear-gradient(145deg, #f4e5bf, #d5b06f); transform: rotateX(90deg) translateZ(50px); }
+        .f-5 { background: linear-gradient(145deg, #d5b06f, #9c733a); transform: rotateX(-90deg) translateZ(50px); }
         .pip {
-            width: 100%;
-            aspect-ratio: 1;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #1a0900;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,.5);
+            background: #1a0d00;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.2);
             align-self: center;
             justify-self: center;
         }
-        .pip.h { visibility: hidden; }
+        .h { visibility: hidden; }
 
         /* ── Roll button ── */
         .btn-roll {
@@ -621,12 +584,39 @@
         <div class="panel">
             <div class="panel-title">Würfel</div>
 
-            <!-- 2.5D Dice -->
-            <div class="dice-scene" id="diceScene" title="Klicken zum Würfeln" role="button" aria-label="Würfeln">
-                <div class="dice-2d" id="dice2d" aria-live="polite" aria-label="Würfel zeigt 1">
-                    <div class="pip h" data-p="1"></div><div class="pip h" data-p="2"></div><div class="pip h" data-p="3"></div>
-                    <div class="pip h" data-p="4"></div><div class="pip" data-p="5"></div><div class="pip h" data-p="6"></div>
-                    <div class="pip h" data-p="7"></div><div class="pip h" data-p="8"></div><div class="pip h" data-p="9"></div>
+            <!-- 3D Gold Dice -->
+            <div class="scene" id="diceScene" title="Klicken zum Würfeln" role="button" aria-label="Würfeln">
+                <div class="cube" id="diceCube" aria-live="polite" aria-label="Würfel zeigt 1">
+                    <div class="face f-1">
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip h"></span>
+                    </div>
+                    <div class="face f-6">
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                    </div>
+                    <div class="face f-3">
+                        <span class="pip"></span><span class="pip h"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip"></span>
+                    </div>
+                    <div class="face f-4">
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip h"></span>
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                    </div>
+                    <div class="face f-2">
+                        <span class="pip"></span><span class="pip h"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip h"></span>
+                        <span class="pip h"></span><span class="pip h"></span><span class="pip"></span>
+                    </div>
+                    <div class="face f-5">
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                        <span class="pip h"></span><span class="pip"></span><span class="pip h"></span>
+                        <span class="pip"></span><span class="pip h"></span><span class="pip"></span>
+                    </div>
                 </div>
             </div>
 
@@ -873,26 +863,19 @@ function updateScoreDisplay() {
 }
 
 /* ═══════════════════════════════════════════════
-   2.5D DICE ROLL
+   3D DICE ROLL
 ═══════════════════════════════════════════════ */
-const DICE_PIPS = {
-    1: [5],
-    2: [3, 7],
-    3: [3, 5, 7],
-    4: [1, 3, 7, 9],
-    5: [1, 3, 5, 7, 9],
-    6: [1, 3, 4, 6, 7, 9],
+const DICE_ROTATIONS = {
+    1: { x: 0,   y: 0 },
+    2: { x: -90, y: 0 },
+    3: { x: 0,   y: -90 },
+    4: { x: 0,   y: 90 },
+    5: { x: 90,  y: 0 },
+    6: { x: 0,   y: 180 },
 };
 
-function setDiceFace(value) {
-    const pips = DICE_PIPS[value] || DICE_PIPS[1];
-    document.querySelectorAll('#dice2d .pip').forEach((el) => {
-        const pos = Number(el.getAttribute('data-p'));
-        el.classList.toggle('h', !pips.includes(pos));
-    });
-    const dice = document.getElementById('dice2d');
-    if (dice) dice.setAttribute('aria-label', `Würfel zeigt ${value}`);
-}
+let currentX = -22;
+let currentY = 28;
 
 function rollDice() {
     if (rolling) return;
@@ -900,19 +883,22 @@ function rollDice() {
     document.getElementById('rollBtn').disabled = true;
 
     const result = Math.floor(Math.random() * 6) + 1;
-    const dice2d = document.getElementById('dice2d');
+    const diceCube = document.getElementById('diceCube');
+    const target = DICE_ROTATIONS[result];
+    const spinsX = (Math.floor(Math.random() * 2) + 3) * 360;
+    const spinsY = (Math.floor(Math.random() * 2) + 3) * 360;
 
-    // Trigger spin animation
-    dice2d.classList.remove('spin');
-    void dice2d.offsetWidth; // reflow
-    dice2d.classList.add('spin');
+    currentX = spinsX + target.x;
+    currentY = spinsY + target.y;
+
+    diceCube.style.setProperty('--rx', `${currentX}deg`);
+    diceCube.style.setProperty('--ry', `${currentY}deg`);
 
     document.getElementById('status').innerHTML =
         t().rolling;
 
     setTimeout(() => {
-        setDiceFace(result);
-        dice2d.classList.remove('spin');
+        diceCube.setAttribute('aria-label', `Würfel zeigt ${result}`);
 
         // Move token
         const oldPos = positions[activePlayer];
@@ -1003,7 +989,12 @@ document.addEventListener('keydown', e => {
 buildBoard();
 buildPlayerUI();
 renderTokens();
-setDiceFace(1);
+
+const diceCube = document.getElementById('diceCube');
+if (diceCube) {
+    diceCube.style.setProperty('--rx', '-22deg');
+    diceCube.style.setProperty('--ry', '28deg');
+}
 
 function applyPlayLanguage(lang) {
     currentLang = lang;
