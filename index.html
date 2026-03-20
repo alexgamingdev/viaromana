@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Romana | Disce Linguam Latinam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com');
+        .font-roman { font-family: 'Cinzel', serif; }
+        body { font-family: 'Fauna One', serif; background-color: #fdfaf3; }
+        .hero-gradient { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com'); background-size: cover; background-position: center; }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <!-- Navigation -->
+    <nav class="p-6 flex justify-between items-center border-b border-stone-200 bg-white sticky top-0 z-50">
+        <div class="text-2xl font-roman font-bold tracking-widest text-red-900">VIA ROMANA</div>
+        <div class="space-x-6 hidden md:block">
+            <a href="#spiel" class="hover:text-red-700 transition">Ludus</a>
+            <a href="#lernen" class="hover:text-red-700 transition">Discere</a>
+            <a href="#magister" class="hover:text-red-700 transition font-bold text-red-800">Magister</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-gradient h-[60vh] flex items-center justify-center text-center text-white px-4">
+        <div>
+            <h1 class="text-5xl md:text-7xl font-roman mb-4 tracking-tighter">Omnes viae Romam ducunt</h1>
+            <p class="text-xl md:text-2xl max-w-2xl mx-auto italic">Lerne Latein spielerisch auf den Straßen des Imperiums.</p>
+            <div class="mt-8 space-x-4">
+                <a href="https://play.viaromana.education" class="bg-red-800 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold transition duration-300 inline-block">Jetzt Spielen</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Info Sektion -->
+    <main class="max-w-5xl mx-auto py-16 px-6">
+        <section id="spiel" class="grid md:grid-cols-2 gap-12 items-center mb-24">
+            <div>
+                <h2 class="text-3xl font-roman text-red-900 mb-4">Das Spielprinzip</h2>
+                <p class="text-lg leading-relaxed text-stone-600">
+                    Via Romana kombiniert das bewährte Handelssystem eines Brettspiel-Klassikers mit der Welt der Antike. 
+                    Erwirb Grundstücke auf dem Forum Romanum, baue Thermen und Aquädukte – aber nur, wenn du die lateinischen Phrasen beherrschst!
+                </p>
+            </div>
+            <div class="bg-stone-200 h-64 rounded-2xl flex items-center justify-center text-stone-400 italic border-2 border-dashed border-stone-300">
+                [ Screenshot deines Spiels hier ]
+            </div>
+        </section>
+
+        <!-- Subdomains Info -->
+        <section id="lernen" class="bg-white p-8 rounded-3xl shadow-xl border border-stone-100">
+            <h2 class="text-center text-3xl font-roman text-red-900 mb-12">Unsere digitalen Welten</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="text-3xl mb-2">🎮</div>
+                    <h3 class="font-bold text-xl mb-2">play.</h3>
+                    <p class="text-sm text-stone-500">Direkt im Browser spielen gegen Freund*innen.</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-2">🎓</div>
+                    <h3 class="font-bold text-xl mb-2">magister.</h3>
+                    <p class="text-sm text-stone-500">Vokabellisten und Übungen für den Unterricht.</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-2">📜</div>
+                    <h3 class="font-bold text-xl mb-2">rules.</h3>
+                    <p class="text-sm text-stone-500">Das Regelwerk der Via Romana auf einen Blick.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-12 px-6 text-center">
+        <p class="font-roman text-white mb-4 italic">© MMXXVI VIA ROMANA TEAM</p>
+        <p class="text-xs">Digitalisiert für die nächste Generation von Latinisten.</p>
+    </footer>
+
+</body>
+</html>
