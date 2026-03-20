@@ -4,55 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regeln | Via Romana</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --roman-red:   #8B1A1A;
-            --roman-gold:  #C9A84C;
-            --roman-dark:  #1a1208;
-            --roman-stone: #f5f0e8;
+            --gold:  #C9A84C;
+            --gold2: #e8c96a;
+            --red:   #8B1A1A;
+            --dark:  #0d0700;
+            --panel: #160b00;
         }
-        * { box-sizing: border-box; }
-        body { font-family: 'Libre Baskerville', serif; background-color: var(--roman-stone); color: #2a1a0a; margin: 0; }
-        .font-roman { font-family: 'Cinzel', serif; }
-        .roman-nav { background: rgba(26,18,8,.96); border-bottom: 2px solid var(--roman-gold); }
-        .page-header { background: linear-gradient(135deg,#1a0d05 0%,#2e1008 50%,#1a0d05 100%); border-bottom: 3px solid var(--roman-gold); }
-        .rule-card { background: #fff; border-left: 5px solid var(--roman-red); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .25s, box-shadow .25s; }
-        .rule-card:hover { transform: translateX(6px); box-shadow: 0 6px 24px rgba(139,26,26,.1); }
-        .rule-num { display:inline-flex; align-items:center; justify-content:center; width:2.2rem; height:2.2rem; border-radius:50%; background:var(--roman-red); color:#fff; font-family:'Cinzel',serif; font-size:.95rem; font-weight:700; flex-shrink:0; }
-        .highlight-box { background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.4); border-radius:4px; padding:1rem 1.25rem; }
-        .loc-pill { display:inline-flex; align-items:center; gap:.4rem; background:rgba(139,26,26,.08); border:1px solid rgba(139,26,26,.25); border-radius:99px; padding:.3rem .85rem; font-size:.85rem; font-family:'Cinzel',serif; color:var(--roman-red); margin:.2rem; }
-        .btn-play { display:inline-block; background:var(--roman-red); color:#fff; padding:1rem 2.8rem; font-family:'Cinzel',serif; font-weight:700; letter-spacing:.18em; text-transform:uppercase; border:2px solid transparent; transition:all .3s; }
-        .btn-play:hover { background:#a52222; border-color:var(--roman-gold); box-shadow:0 0 18px rgba(201,168,76,.3); }
-        ul.roman-list { list-style:none; padding:0; margin:0; }
-        ul.roman-list li { padding:.4rem 0 .4rem 1.5rem; position:relative; }
-        ul.roman-list li::before { content:'⚔'; position:absolute; left:0; color:var(--roman-gold); font-size:.75rem; top:.55rem; }
-        footer.roman-footer { background:var(--roman-dark); border-top:3px solid var(--roman-gold); color:rgba(201,168,76,.5); }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Libre Baskerville', serif;
+            background: var(--dark);
+            color: rgba(245,240,232,.88);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Particle canvas ── */
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Navigation ── */
+        .top-bar {
+            position: relative;
+            z-index: 10;
+            background: rgba(13,7,0,.95);
+            border-bottom: 2px solid rgba(201,168,76,.35);
+            padding: .75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar a {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: .78rem;
+            letter-spacing: .15em;
+            font-weight: 700;
+            transition: color .2s;
+        }
+        .top-bar a:hover { color: var(--gold2); }
+        .top-bar .label {
+            font-family: 'Cinzel', serif;
+            font-size: .68rem;
+            letter-spacing: .22em;
+            color: rgba(201,168,76,.45);
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 4.5rem 1.5rem 3rem;
+            border-bottom: 1px solid rgba(201,168,76,.18);
+            background: linear-gradient(to bottom, rgba(30,15,0,.6) 0%, transparent 100%);
+        }
+        .page-header .eyebrow {
+            font-family: 'Cinzel', serif;
+            font-size: .7rem;
+            letter-spacing: .28em;
+            color: rgba(201,168,76,.5);
+            margin-bottom: .9rem;
+        }
+        .page-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            color: var(--gold);
+            text-shadow: 0 0 40px rgba(201,168,76,.45);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: .8rem;
+        }
+        .page-header .sub {
+            font-style: italic;
+            color: rgba(245,240,232,.45);
+            font-size: .95rem;
+        }
+
+        /* ── Main content ── */
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 3.5rem 1.5rem 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* ── Rule card (dark panel) ── */
+        .rule-card {
+            background: var(--panel);
+            border: 1px solid rgba(201,168,76,.22);
+            border-left: 4px solid var(--red);
+            border-radius: 6px;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 4px 30px rgba(0,0,0,.5), inset 0 0 60px rgba(0,0,0,.2);
+            position: relative;
+            overflow: hidden;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        .rule-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg, transparent, transparent 28px,
+                rgba(201,168,76,.012) 28px, rgba(201,168,76,.012) 29px
+            );
+            pointer-events: none;
+        }
+        .rule-card:hover {
+            border-color: rgba(201,168,76,.4);
+            box-shadow: 0 8px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(201,168,76,.1);
+        }
+        .rule-card.gold-accent { border-left-color: var(--gold); }
+
+        /* card header row */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.3rem;
+        }
+
+        /* roman numeral badge */
+        .rule-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.4rem;
+            height: 2.4rem;
+            border-radius: 50%;
+            background: var(--red);
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 0 14px rgba(139,26,26,.5);
+        }
+        .rule-num.gold-num {
+            background: var(--gold);
+            color: #1a0d00;
+            box-shadow: 0 0 14px rgba(201,168,76,.5);
+        }
+
+        .card-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: var(--gold2);
+            letter-spacing: .05em;
+        }
+
+        /* ── Highlight box ── */
+        .highlight-box {
+            background: rgba(201,168,76,.07);
+            border: 1px solid rgba(201,168,76,.3);
+            border-radius: 5px;
+            padding: 1rem 1.3rem;
+            margin-top: .8rem;
+        }
+        .highlight-box .box-title {
+            font-family: 'Cinzel', serif;
+            font-size: .82rem;
+            color: var(--gold2);
+            letter-spacing: .08em;
+            margin-bottom: .4rem;
+        }
+        .highlight-box p {
+            font-size: .92rem;
+            line-height: 1.7;
+            color: rgba(245,240,232,.8);
+        }
+        .highlight-box p.muted {
+            font-size: .84rem;
+            color: rgba(201,168,76,.5);
+            font-style: italic;
+            margin-top: .6rem;
+        }
+
+        /* ── Location pills ── */
+        .loc-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin: 1.1rem 0;
+        }
+        .loc-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            background: rgba(139,26,26,.18);
+            border: 1px solid rgba(139,26,26,.45);
+            border-radius: 99px;
+            padding: .32rem .9rem;
+            font-family: 'Cinzel', serif;
+            font-size: .78rem;
+            color: var(--gold2);
+            letter-spacing: .04em;
+        }
+
+        /* ── List ── */
+        ul.roman-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        ul.roman-list li {
+            padding: .45rem 0 .45rem 1.6rem;
+            position: relative;
+            font-size: .93rem;
+            line-height: 1.65;
+            color: rgba(245,240,232,.82);
+        }
+        ul.roman-list li::before {
+            content: '⚔';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-size: .72rem;
+            top: .62rem;
+        }
+        ul.roman-list li strong { color: rgba(245,240,232,.97); }
+
+        /* body text */
+        .rule-card p {
+            font-size: .93rem;
+            line-height: 1.75;
+            color: rgba(245,240,232,.82);
+        }
+        .rule-card p strong { color: rgba(245,240,232,.97); }
+        .rule-card p em { color: var(--gold2); font-style: italic; }
+
+        /* ── Viktoria callout ── */
+        .viktoria {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            color: var(--gold);
+            text-align: center;
+            letter-spacing: .12em;
+            text-shadow: 0 0 24px rgba(201,168,76,.5);
+            margin-top: 1.4rem;
+        }
+
+        /* ── Divider ── */
+        .rule-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201,168,76,.25), transparent);
+            margin: .2rem 0;
+        }
+
+        /* ── CTA ── */
+        .cta-wrap {
+            text-align: center;
+            padding-top: 1.5rem;
+        }
+        .cta-label {
+            font-family: 'Cinzel', serif;
+            font-size: .68rem;
+            letter-spacing: .22em;
+            color: rgba(201,168,76,.45);
+            margin-bottom: 1.4rem;
+        }
+        .btn-play {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--red) 0%, #6b1212 100%);
+            color: #fff;
+            padding: 1rem 3rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: .2em;
+            font-size: .88rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 2px solid rgba(201,168,76,.35);
+            border-radius: 3px;
+            transition: all .3s;
+        }
+        .btn-play:hover {
+            background: linear-gradient(135deg, #a52222 0%, #8b1a1a 100%);
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(201,168,76,.3);
+        }
+
+        /* ── Footer ── */
+        footer {
+            position: relative;
+            z-index: 5;
+            background: rgba(13,7,0,.95);
+            border-top: 2px solid rgba(201,168,76,.2);
+            padding: 2.2rem 1rem;
+            text-align: center;
+        }
+        footer .f-title {
+            font-family: 'Cinzel', serif;
+            letter-spacing: .25em;
+            font-size: .8rem;
+            color: rgba(201,168,76,.6);
+            margin-bottom: .4rem;
+        }
+        footer .f-sub {
+            font-size: .72rem;
+            color: rgba(201,168,76,.3);
+        }
     </style>
 </head>
 <body>
 
-    <nav class="roman-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4">
-        <a href="../" class="font-roman text-amber-400 font-bold tracking-widest hover:text-amber-300 transition">← VIA ROMANA</a>
-        <span class="font-roman text-xs tracking-widest" style="color:rgba(201,168,76,.5);">CODEX REGULARUM</span>
-    </nav>
+    <!-- Particle canvas (same as play page) -->
+    <canvas id="particles"></canvas>
 
-    <header class="page-header pt-28 pb-14 text-center px-6">
-        <div class="font-roman text-xs tracking-widest mb-3" style="color:rgba(201,168,76,.55);">✦ CODEX REGULARUM ✦</div>
-        <h1 class="font-roman text-4xl md:text-6xl mb-4 uppercase" style="color:var(--roman-gold);">Die Gesetze Roms</h1>
-        <p class="italic" style="color:rgba(245,240,232,.6);">Discendo vincimus – Durch Lernen siegen wir.</p>
+    <!-- Navigation -->
+    <div class="top-bar">
+        <a href="../">← VIA ROMANA</a>
+        <span class="label">CODEX REGULARUM</span>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="eyebrow">✦ CODEX REGULARUM ✦</div>
+        <h1>Die Gesetze Roms</h1>
+        <p class="sub">Discendo vincimus – Durch Lernen siegen wir.</p>
     </header>
 
-    <main class="max-w-3xl mx-auto py-16 px-6 space-y-10">
+    <main>
 
         <!-- I. Das Spiel -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">I</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Das Spiel</h2>
+                <h2 class="card-title">Das Spiel</h2>
             </div>
             <p class="leading-relaxed mb-4">
                 <strong>Via Romana</strong> ist ein Brettspiel, bei dem die Spieler durch das antike Rom reisen
@@ -62,125 +357,186 @@
                 Grammatikaufgaben in der Schule und Fragen zu den Lektionen aus <em>Pontes</em>.
             </p>
             <div class="highlight-box">
-                <p class="font-roman text-sm" style="color:var(--roman-red);">Motto: Discendo vincimus.</p>
-                <p class="text-sm italic mt-1" style="color:#6a5a4a;">Durch Lernen siegen wir.</p>
+                <div class="box-title">Motto: Discendo vincimus.</div>
+                <p>Durch Lernen siegen wir.</p>
             </div>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- II. Ziel -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">II</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Ziel des Spiels</h2>
+                <h2 class="card-title">Ziel des Spiels</h2>
             </div>
-            <p class="leading-relaxed">
+            <p>
                 Ziel ist es, als Erster das Ende des Spielfelds zu erreichen und dabei sein Wissen in Latein
                 unter Beweis zu stellen. Wer als Erster am Ziel ankommt, ruft laut:
             </p>
-            <p class="font-roman text-2xl text-center mt-5" style="color:var(--roman-red);">„Viktoria!"</p>
+            <p class="viktoria">„Viktoria!"</p>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- III. Vorbereitung -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">III</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Spielvorbereitung</h2>
+                <h2 class="card-title">Spielvorbereitung</h2>
             </div>
-            <ul class="roman-list space-y-2 leading-relaxed">
+            <ul class="roman-list">
                 <li>Jeder Spieler sucht sich eine <strong>Spielfigur</strong> aus.</li>
                 <li>Der Spieler, der am besten in Latein ist, beginnt als Erster zu würfeln.</li>
                 <li>Alle Figuren starten auf dem Startfeld am Anfang der Via Romana.</li>
             </ul>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- IV. Spielzug -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">IV</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Der Spielzug</h2>
+                <h2 class="card-title">Der Spielzug</h2>
             </div>
-            <p class="leading-relaxed mb-4">
+            <p style="margin-bottom:.8rem;">
                 An seinem Zug würfelt ein Spieler und bewegt seine Figur die entsprechende Anzahl an Feldern
                 vorwärts auf der Via Romana.
             </p>
             <div class="highlight-box">
-                <strong class="font-roman text-sm" style="color:var(--roman-red);">Ereignisfeld:</strong>
-                <p class="text-sm mt-1 leading-relaxed">
+                <div class="box-title">⚡ Ereignisfeld</div>
+                <p>
                     Kommt man auf ein <strong>Ereignisfeld</strong>, zieht man eine Ereigniskarte
                     und führt die beschriebene Aktion sofort aus.
                 </p>
             </div>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- V. Orte -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">V</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Orte &amp; Lektionsfragen</h2>
+                <h2 class="card-title">Orte &amp; Lektionsfragen</h2>
             </div>
-            <p class="leading-relaxed mb-5">
+            <p style="margin-bottom:.4rem;">
                 Wenn ein Spieler an einem der folgenden Orte <strong>vorbeikommt</strong>, muss er
                 anhalten – auch wenn der Würfel eine höhere Anzahl an Feldern anzeigt.
                 Dann zieht man einen Zettel aus der jeweiligen Lektion und beantwortet die Frage.
             </p>
-            <div class="mb-5">
+            <div class="loc-pills">
                 <span class="loc-pill">🏛️ Forum Romanum</span>
                 <span class="loc-pill">🏟️ Circus Maximus</span>
                 <span class="loc-pill">📚 Die Schule</span>
                 <span class="loc-pill">🌾 Villa Rustica</span>
                 <span class="loc-pill">🏙️ Insulae</span>
             </div>
-            <ul class="roman-list space-y-2 leading-relaxed">
+            <ul class="roman-list">
                 <li><strong>Frage falsch beantwortet:</strong> Die Figur bleibt stehen; der nächste Spieler ist an der Reihe.</li>
                 <li><strong>Frage richtig beantwortet:</strong> Man würfelt erneut und bewegt die Figur diese Anzahl an Schritten weiter.</li>
             </ul>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- VI. Schule -->
-        <section class="rule-card p-8" style="border-left-color:var(--roman-gold);">
-            <div class="flex items-center gap-4 mb-5">
-                <span class="rule-num" style="background:var(--roman-gold);">VI</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Die Schule – Grammatikpflicht</h2>
+        <section class="rule-card gold-accent">
+            <div class="card-header">
+                <span class="rule-num gold-num">VI</span>
+                <h2 class="card-title">Die Schule – Grammatikpflicht</h2>
             </div>
             <div class="highlight-box">
-                <p class="leading-relaxed">
+                <p>
                     <strong>Ab dem Erreichen der Schule</strong> gilt für den Rest des Spiels:
                     Bei jedem <strong>dritten Zug</strong> muss ein Spieler zusätzlich eine
                     <strong>Grammatikaufgabe</strong> ziehen und beantworten.
                 </p>
-                <p class="text-sm mt-3 italic" style="color:#6a5a4a;">
+                <p class="muted">
                     Kann die Grammatikaufgabe nicht beantwortet werden, bleibt die Figur an der aktuellen
                     Position stehen.
                 </p>
             </div>
         </section>
 
+        <div class="rule-divider"></div>
+
         <!-- VII. Spielende -->
-        <section class="rule-card p-8">
-            <div class="flex items-center gap-4 mb-5">
+        <section class="rule-card">
+            <div class="card-header">
                 <span class="rule-num">VII</span>
-                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Spielende &amp; Sieg</h2>
+                <h2 class="card-title">Spielende &amp; Sieg</h2>
             </div>
-            <p class="leading-relaxed">
+            <p>
                 Das Spiel endet, sobald der erste Spieler das <strong>Zielfeld</strong> am Ende der
                 Via Romana erreicht. Dieser Spieler gewinnt und ruft laut:
             </p>
-            <p class="font-roman text-3xl text-center mt-5 mb-2" style="color:var(--roman-gold);">Viktoria!</p>
-            <p class="text-center text-sm italic" style="color:#6a5a4a;">„Durch Lernen siegen wir."</p>
+            <p class="viktoria">Viktoria!</p>
+            <p style="text-align:center;font-size:.82rem;font-style:italic;color:rgba(201,168,76,.5);margin-top:.6rem;">
+                „Durch Lernen siegen wir."
+            </p>
         </section>
 
         <!-- CTA -->
-        <div class="text-center pt-6">
-            <p class="font-roman text-xs tracking-widest mb-6" style="color:rgba(139,90,30,.6);">BEREIT FÜR DIE ERSTE RUNDE?</p>
+        <div class="cta-wrap">
+            <p class="cta-label">BEREIT FÜR DIE ERSTE RUNDE?</p>
             <a href="../play/" class="btn-play">AD LUDUM! (ZUM SPIEL)</a>
         </div>
 
     </main>
 
-    <footer class="roman-footer py-10 text-center">
-        <div class="font-roman tracking-widest text-sm mb-1" style="color:rgba(201,168,76,.65);">VIA ROMANA</div>
-        <div class="text-xs" style="color:rgba(201,168,76,.35);">Codex Regularum · Version 2.0</div>
+    <footer>
+        <div class="f-title">VIA ROMANA</div>
+        <div class="f-sub">Codex Regularum · Version 2.0</div>
     </footer>
 
+    <script>
+        /* ── Particle system (same as play page) ── */
+        (function () {
+            const canvas = document.getElementById('particles');
+            const ctx    = canvas.getContext('2d');
+            let W, H, pts = [];
+
+            function resize() {
+                W = canvas.width  = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function mkPt() {
+                return {
+                    x:  Math.random() * W,
+                    y:  Math.random() * H,
+                    r:  Math.random() * 1.4 + 0.3,
+                    vx: (Math.random() - 0.5) * 0.18,
+                    vy: (Math.random() - 0.5) * 0.18,
+                    a:  Math.random()
+                };
+            }
+
+            for (let i = 0; i < 55; i++) pts.push(mkPt());
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                pts.forEach(p => {
+                    p.a += 0.007;
+                    const alpha = (Math.sin(p.a) * 0.5 + 0.5) * 0.55;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(201,168,76,${alpha})`;
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < -5 || p.x > W + 5 || p.y < -5 || p.y > H + 5) {
+                        Object.assign(p, mkPt());
+                    }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
 </body>
 </html>
