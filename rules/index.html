@@ -5,70 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regeln | Via Romana</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com');
+        :root {
+            --roman-red:   #8B1A1A;
+            --roman-gold:  #C9A84C;
+            --roman-dark:  #1a1208;
+            --roman-stone: #f5f0e8;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Libre Baskerville', serif; background-color: var(--roman-stone); color: #2a1a0a; margin: 0; }
         .font-roman { font-family: 'Cinzel', serif; }
-        body { font-family: 'Libre Baskerville', serif; background-color: #fdfaf3; }
-        .rule-card { border-left: 4px solid #721c24; background: white; transition: transform 0.2s; }
-        .rule-card:hover { transform: translateX(10px); }
+        .roman-nav { background: rgba(26,18,8,.96); border-bottom: 2px solid var(--roman-gold); }
+        .page-header { background: linear-gradient(135deg,#1a0d05 0%,#2e1008 50%,#1a0d05 100%); border-bottom: 3px solid var(--roman-gold); }
+        .rule-card { background: #fff; border-left: 5px solid var(--roman-red); box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: transform .25s, box-shadow .25s; }
+        .rule-card:hover { transform: translateX(6px); box-shadow: 0 6px 24px rgba(139,26,26,.1); }
+        .rule-num { display:inline-flex; align-items:center; justify-content:center; width:2.2rem; height:2.2rem; border-radius:50%; background:var(--roman-red); color:#fff; font-family:'Cinzel',serif; font-size:.95rem; font-weight:700; flex-shrink:0; }
+        .highlight-box { background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.4); border-radius:4px; padding:1rem 1.25rem; }
+        .loc-pill { display:inline-flex; align-items:center; gap:.4rem; background:rgba(139,26,26,.08); border:1px solid rgba(139,26,26,.25); border-radius:99px; padding:.3rem .85rem; font-size:.85rem; font-family:'Cinzel',serif; color:var(--roman-red); margin:.2rem; }
+        .btn-play { display:inline-block; background:var(--roman-red); color:#fff; padding:1rem 2.8rem; font-family:'Cinzel',serif; font-weight:700; letter-spacing:.18em; text-transform:uppercase; border:2px solid transparent; transition:all .3s; }
+        .btn-play:hover { background:#a52222; border-color:var(--roman-gold); box-shadow:0 0 18px rgba(201,168,76,.3); }
+        ul.roman-list { list-style:none; padding:0; margin:0; }
+        ul.roman-list li { padding:.4rem 0 .4rem 1.5rem; position:relative; }
+        ul.roman-list li::before { content:'⚔'; position:absolute; left:0; color:var(--roman-gold); font-size:.75rem; top:.55rem; }
+        footer.roman-footer { background:var(--roman-dark); border-top:3px solid var(--roman-gold); color:rgba(201,168,76,.5); }
     </style>
 </head>
-<body class="text-stone-900">
+<body>
 
-    <!-- Navigation -->
-    <nav class="p-6 bg-white border-b border-stone-200 flex justify-between items-center sticky top-0 z-50">
-        <a href="../" class="font-roman text-red-900 font-bold tracking-tighter">← VIA ROMANA</a>
-        <span class="text-xs font-roman tracking-widest text-stone-400">CODEX REGULARUM</span>
+    <nav class="roman-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4">
+        <a href="../" class="font-roman text-amber-400 font-bold tracking-widest hover:text-amber-300 transition">← VIA ROMANA</a>
+        <span class="font-roman text-xs tracking-widest" style="color:rgba(201,168,76,.5);">CODEX REGULARUM</span>
     </nav>
 
-    <!-- Header -->
-    <header class="py-16 bg-red-950 text-white text-center">
-        <h1 class="text-4xl md:text-6xl font-roman mb-4 uppercase">Die Gesetze Roms</h1>
-        <p class="text-stone-300 italic">Wie man Imperator der Sprache wird.</p>
+    <header class="page-header pt-28 pb-14 text-center px-6">
+        <div class="font-roman text-xs tracking-widest mb-3" style="color:rgba(201,168,76,.55);">✦ CODEX REGULARUM ✦</div>
+        <h1 class="font-roman text-4xl md:text-6xl mb-4 uppercase" style="color:var(--roman-gold);">Die Gesetze Roms</h1>
+        <p class="italic" style="color:rgba(245,240,232,.6);">Discendo vincimus – Durch Lernen siegen wir.</p>
     </header>
 
-    <main class="max-w-4xl mx-auto py-16 px-6">
-        
-        <!-- Regel 1: Das Ziel -->
-        <section class="mb-12 rule-card p-8 shadow-sm">
-            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">I. Das Ziel des Spiels</h2>
-            <p class="leading-relaxed">
-                Ziel von <strong>Via Romana</strong> ist es, durch klugen Handel mit römischen Provinzen und Gebäuden das größte Vermögen (Sesterzen) anzuhäufen. Der Sieg wird jedoch nur dem zuteil, der seine <strong>Grammatik-Punkte</strong> (Points of Eloquence) stabil hält. Wer bankrott geht oder sein sprachliches Ansehen verliert, scheidet aus.
+    <main class="max-w-3xl mx-auto py-16 px-6 space-y-10">
+
+        <!-- I. Das Spiel -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">I</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Das Spiel</h2>
+            </div>
+            <p class="leading-relaxed mb-4">
+                <strong>Via Romana</strong> ist ein Brettspiel, bei dem die Spieler durch das antike Rom reisen
+                und Orte wie die <strong>Villa Rustica</strong>, <strong>Insulae</strong>, die <strong>Schule</strong>,
+                das <strong>Forum Romanum</strong> und den <strong>Circus Maximus</strong> besuchen.
+                Auf ihrem Weg begegnen ihnen Herausforderungen aus dem römischen Alltag:
+                Grammatikaufgaben in der Schule und Fragen zu den Lektionen aus <em>Pontes</em>.
             </p>
+            <div class="highlight-box">
+                <p class="font-roman text-sm" style="color:var(--roman-red);">Motto: Discendo vincimus.</p>
+                <p class="text-sm italic mt-1" style="color:#6a5a4a;">Durch Lernen siegen wir.</p>
+            </div>
         </section>
 
-        <!-- Regel 2: Der Spielzug -->
-        <section class="mb-12 rule-card p-8 shadow-sm">
-            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">II. Der Spielzug & Latein-Checks</h2>
-            <p class="mb-4">Ein Spieler würfelt und zieht über die <em>Via</em>. Landet er auf einem freien Feld, kann er es kaufen – aber nur nach bestandenem <strong>„Interrogatio“</strong> (Vokabeltest).</p>
-            <ul class="list-disc pl-6 space-y-2 text-stone-600">
-                <li><strong>Kauf:</strong> Übersetze den Namen des Ortes und eine kurze Phrase korrekt.</li>
-                <li><strong>Miete:</strong> Landest du bei Gegnern, zahlst du Sesterzen. Die Miete sinkt, wenn du die Vokabel des Feldes konjugieren kannst.</li>
+        <!-- II. Ziel -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">II</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Ziel des Spiels</h2>
+            </div>
+            <p class="leading-relaxed">
+                Ziel ist es, als Erster das Ende des Spielfelds zu erreichen und dabei sein Wissen in Latein
+                unter Beweis zu stellen. Wer als Erster am Ziel ankommt, ruft laut:
+            </p>
+            <p class="font-roman text-2xl text-center mt-5" style="color:var(--roman-red);">„Viktoria!"</p>
+        </section>
+
+        <!-- III. Vorbereitung -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">III</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Spielvorbereitung</h2>
+            </div>
+            <ul class="roman-list space-y-2 leading-relaxed">
+                <li>Jeder Spieler sucht sich eine <strong>Spielfigur</strong> aus.</li>
+                <li>Der Spieler, der am besten in Latein ist, beginnt als Erster zu würfeln.</li>
+                <li>Alle Figuren starten auf dem Startfeld am Anfang der Via Romana.</li>
             </ul>
         </section>
 
-        <!-- Regel 3: Foren & Thermen -->
-        <section class="mb-12 rule-card p-8 shadow-sm">
-            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">III. Bauwerke (Domus & Villae)</h2>
-            <p>Hast du alle Straßen einer Farbgruppe (z.B. <em>Forum Romanum</em>), darfst du Häuser (Tabernae) und später Villen bauen. Jedes Gebäude erhöht die Miete und den Schwierigkeitsgrad der Latein-Aufgaben für deine Gegner.</p>
+        <!-- IV. Spielzug -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">IV</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Der Spielzug</h2>
+            </div>
+            <p class="leading-relaxed mb-4">
+                An seinem Zug würfelt ein Spieler und bewegt seine Figur die entsprechende Anzahl an Feldern
+                vorwärts auf der Via Romana.
+            </p>
+            <div class="highlight-box">
+                <strong class="font-roman text-sm" style="color:var(--roman-red);">Ereignisfeld:</strong>
+                <p class="text-sm mt-1 leading-relaxed">
+                    Kommt man auf ein <strong>Ereignisfeld</strong>, zieht man eine Ereigniskarte
+                    und führt die beschriebene Aktion sofort aus.
+                </p>
+            </div>
         </section>
 
-        <!-- Regel 4: Ereignisse -->
-        <section class="mb-12 rule-card p-8 shadow-sm">
-            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">IV. Fortuna & Fatum</h2>
-            <p>Anstatt Gemeinschafts- und Ereigniskarten gibt es bei uns <strong>Fortuna</strong> (Glück) und <strong>Fatum</strong> (Schicksal). Diese Karten enthalten historische Ereignisse wie den Ausbruch des Vesuvs oder politische Intrigen im Senat.</p>
+        <!-- V. Orte -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">V</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Orte &amp; Lektionsfragen</h2>
+            </div>
+            <p class="leading-relaxed mb-5">
+                Wenn ein Spieler an einem der folgenden Orte <strong>vorbeikommt</strong>, muss er
+                anhalten – auch wenn der Würfel eine höhere Anzahl an Feldern anzeigt.
+                Dann zieht man einen Zettel aus der jeweiligen Lektion und beantwortet die Frage.
+            </p>
+            <div class="mb-5">
+                <span class="loc-pill">🏛️ Forum Romanum</span>
+                <span class="loc-pill">🏟️ Circus Maximus</span>
+                <span class="loc-pill">📚 Die Schule</span>
+                <span class="loc-pill">🌾 Villa Rustica</span>
+                <span class="loc-pill">🏙️ Insulae</span>
+            </div>
+            <ul class="roman-list space-y-2 leading-relaxed">
+                <li><strong>Frage falsch beantwortet:</strong> Die Figur bleibt stehen; der nächste Spieler ist an der Reihe.</li>
+                <li><strong>Frage richtig beantwortet:</strong> Man würfelt erneut und bewegt die Figur diese Anzahl an Schritten weiter.</li>
+            </ul>
         </section>
 
-        <!-- Call to Action -->
-        <div class="text-center mt-20">
-            <p class="mb-6 font-roman text-stone-400 uppercase tracking-widest text-sm">Bereit für die erste Runde?</p>
-            <a href="../play/" class="inline-block bg-red-900 text-white px-12 py-4 font-roman font-bold hover:bg-red-800 transition shadow-lg">AD LUDUM! (ZUM SPIEL)</a>
+        <!-- VI. Schule -->
+        <section class="rule-card p-8" style="border-left-color:var(--roman-gold);">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num" style="background:var(--roman-gold);">VI</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Die Schule – Grammatikpflicht</h2>
+            </div>
+            <div class="highlight-box">
+                <p class="leading-relaxed">
+                    <strong>Ab dem Erreichen der Schule</strong> gilt für den Rest des Spiels:
+                    Bei jedem <strong>dritten Zug</strong> muss ein Spieler zusätzlich eine
+                    <strong>Grammatikaufgabe</strong> ziehen und beantworten.
+                </p>
+                <p class="text-sm mt-3 italic" style="color:#6a5a4a;">
+                    Kann die Grammatikaufgabe nicht beantwortet werden, bleibt die Figur an der aktuellen
+                    Position stehen.
+                </p>
+            </div>
+        </section>
+
+        <!-- VII. Spielende -->
+        <section class="rule-card p-8">
+            <div class="flex items-center gap-4 mb-5">
+                <span class="rule-num">VII</span>
+                <h2 class="font-roman text-2xl" style="color:var(--roman-red);">Spielende &amp; Sieg</h2>
+            </div>
+            <p class="leading-relaxed">
+                Das Spiel endet, sobald der erste Spieler das <strong>Zielfeld</strong> am Ende der
+                Via Romana erreicht. Dieser Spieler gewinnt und ruft laut:
+            </p>
+            <p class="font-roman text-3xl text-center mt-5 mb-2" style="color:var(--roman-gold);">Viktoria!</p>
+            <p class="text-center text-sm italic" style="color:#6a5a4a;">„Durch Lernen siegen wir."</p>
+        </section>
+
+        <!-- CTA -->
+        <div class="text-center pt-6">
+            <p class="font-roman text-xs tracking-widest mb-6" style="color:rgba(139,90,30,.6);">BEREIT FÜR DIE ERSTE RUNDE?</p>
+            <a href="../play/" class="btn-play">AD LUDUM! (ZUM SPIEL)</a>
         </div>
 
     </main>
 
-    <footer class="py-10 text-center text-stone-400 text-xs font-roman border-t border-stone-200">
-        VIA ROMANA | REGELWERK VERSION 1.0.42
+    <footer class="roman-footer py-10 text-center">
+        <div class="font-roman tracking-widest text-sm mb-1" style="color:rgba(201,168,76,.65);">VIA ROMANA</div>
+        <div class="text-xs" style="color:rgba(201,168,76,.35);">Codex Regularum · Version 2.0</div>
     </footer>
 
 </body>

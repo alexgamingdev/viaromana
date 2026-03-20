@@ -1,18 +1,939 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8"><title>Via Romana | Game Interface</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { background: #0c0c0c; color: #d4af37; font-family: monospace; }</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Romana | Spielfeld</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold:  #C9A84C;
+            --gold2: #e8c96a;
+            --red:   #8B1A1A;
+            --dark:  #0d0700;
+            --panel: #160b00;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: var(--dark);
+            color: var(--gold);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Particle canvas ── */
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Top bar ── */
+        .top-bar {
+            position: relative;
+            z-index: 10;
+            background: rgba(13,7,0,.95);
+            border-bottom: 2px solid rgba(201,168,76,.35);
+            padding: .7rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar a {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: .75rem;
+            letter-spacing: .15em;
+            transition: color .2s;
+        }
+        .top-bar a:hover { color: var(--gold2); }
+        .top-bar .tagline { font-size: .7rem; letter-spacing: .12em; color: rgba(201,168,76,.45); }
+
+        /* ── Main layout ── */
+        .main {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 1rem 3rem;
+        }
+        @media (min-width: 960px) {
+            .main {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 2rem;
+                padding: 2rem 1.5rem 3rem;
+            }
+        }
+
+        /* ── Page title ── */
+        .page-title {
+            text-align: center;
+            width: 100%;
+        }
+        .page-title h1 {
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            letter-spacing: .25em;
+            text-shadow: 0 0 30px rgba(201,168,76,.5);
+        }
+        .page-title p {
+            font-size: .65rem;
+            letter-spacing: .18em;
+            color: rgba(201,168,76,.45);
+            margin-top: .3rem;
+        }
+
+        /* ═══════════════════════════════════════
+           BOARD
+        ═══════════════════════════════════════ */
+        .board-section { flex: 1 1 auto; min-width: 0; max-width: 780px; }
+
+        .board-outer {
+            background: #160c03;
+            border: 2px solid rgba(201,168,76,.3);
+            border-radius: 8px;
+            box-shadow:
+                0 0 80px rgba(201,168,76,.07),
+                0 20px 60px rgba(0,0,0,.6),
+                inset 0 0 60px rgba(0,0,0,.5);
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .board-outer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg, transparent, transparent 20px,
+                rgba(201,168,76,.015) 20px, rgba(201,168,76,.015) 21px
+            );
+            pointer-events: none;
+        }
+
+        /* ── Snake rows ── */
+        .board-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        .board-row:last-child { margin-bottom: 0; }
+        .board-row.reverse { flex-direction: row-reverse; }
+
+        /* ── Row connector (arrow) ── */
+        .row-connector {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 2px 8px;
+            font-size: .85rem;
+            color: rgba(201,168,76,.35);
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+        .board-row.reverse + .row-connector { justify-content: flex-start; }
+        @keyframes arrowPulse {
+            0%,100% { opacity: .35; }
+            50%      { opacity: .75; }
+        }
+
+        /* ── Individual field ── */
+        .field {
+            flex: 1 1 0;
+            min-width: 0;
+            aspect-ratio: 1;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: .5rem;
+            letter-spacing: .05em;
+            text-align: center;
+            overflow: hidden;
+            transition: transform .25s, box-shadow .25s;
+            cursor: default;
+        }
+
+        /* plain */
+        .field-plain {
+            background: rgba(201,168,76,.04);
+            border: 1px solid rgba(201,168,76,.18);
+        }
+        .field-plain:hover {
+            transform: translateY(-3px) scale(1.05);
+            border-color: rgba(201,168,76,.45);
+            box-shadow: 0 6px 20px rgba(0,0,0,.5);
+        }
+
+        /* event */
+        .field-event {
+            background: rgba(123,94,167,.14);
+            border: 1px solid rgba(160,120,200,.35);
+        }
+        .field-event:hover {
+            transform: translateY(-3px) scale(1.06);
+            box-shadow: 0 6px 20px rgba(123,94,167,.3);
+        }
+
+        /* start */
+        .field-start {
+            background: rgba(76,175,80,.15);
+            border: 2px solid #4caf50;
+            animation: glowGreen 2.5s ease-in-out infinite;
+        }
+        @keyframes glowGreen {
+            0%,100% { box-shadow: 0 0 8px rgba(76,175,80,.3); }
+            50%      { box-shadow: 0 0 22px rgba(76,175,80,.7); }
+        }
+
+        /* end */
+        .field-end {
+            background: rgba(201,168,76,.15);
+            border: 2px solid var(--gold);
+            animation: glowGold 2s ease-in-out infinite;
+        }
+        @keyframes glowGold {
+            0%,100% { box-shadow: 0 0 10px rgba(201,168,76,.4); }
+            50%      { box-shadow: 0 0 30px rgba(201,168,76,.85); }
+        }
+
+        /* ── Location field (3D flip card) ── */
+        .field-loc {
+            border: 2px solid rgba(201,168,76,.5);
+            background: transparent;
+            cursor: pointer;
+            perspective: 600px;
+        }
+        .field-loc:hover { box-shadow: 0 0 28px rgba(201,168,76,.4); }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+            transition: transform .7s cubic-bezier(.4,0,.2,1);
+        }
+        .field-loc:hover .card-inner { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Front: the image */
+        .card-front {
+            background-size: cover;
+            background-position: center;
+        }
+        .card-front::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 55%);
+        }
+        .card-front-label {
+            position: relative;
+            z-index: 1;
+            font-size: .42rem;
+            letter-spacing: .08em;
+            color: #fff;
+            padding: 2px 3px;
+            text-shadow: 0 1px 4px rgba(0,0,0,.9);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* Back: gold info */
+        .card-back {
+            transform: rotateY(180deg);
+            background: rgba(10,5,0,.92);
+            border: 1px solid rgba(201,168,76,.4);
+            justify-content: center;
+            padding: 4px;
+        }
+        .card-back-name {
+            font-size: .44rem;
+            letter-spacing: .06em;
+            color: var(--gold2);
+            text-align: center;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+        .card-back-desc {
+            font-size: .36rem;
+            letter-spacing: .03em;
+            color: rgba(201,168,76,.65);
+            text-align: center;
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        /* ── Field icon / number ── */
+        .field-icon { font-size: clamp(.8rem,2.5vw,1.2rem); line-height: 1; }
+        .field-num  { font-size: .55rem; color: rgba(201,168,76,.25); }
+        .field-lbl  { font-size: .38rem; letter-spacing: .05em; margin-top: 2px; opacity: .7; }
+
+        /* ── Player token ── */
+        .token {
+            position: absolute;
+            width: 34%;
+            height: 34%;
+            border-radius: 50%;
+            z-index: 20;
+            pointer-events: none;
+            top: 5%;
+            left: 5%;
+            transition: opacity .3s;
+            box-shadow:
+                0 3px 8px rgba(0,0,0,.7),
+                inset 0 -3px 5px rgba(0,0,0,.35),
+                inset 0 3px 5px rgba(255,255,255,.35);
+            animation: tokenBob 2s ease-in-out infinite;
+        }
+        @keyframes tokenBob {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-20%); }
+        }
+
+        /* ── Legend ── */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem .9rem;
+            margin-top: .8rem;
+            justify-content: center;
+            font-size: .62rem;
+            letter-spacing: .06em;
+        }
+        .leg-item { display: flex; align-items: center; gap: .3rem; }
+        .leg-dot  { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+        /* ═══════════════════════════════════════
+           CONTROLS SIDEBAR
+        ═══════════════════════════════════════ */
+        .controls {
+            flex: 0 0 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        @media (max-width: 959px) { .controls { width: 100%; max-width: 480px; } }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid rgba(201,168,76,.25);
+            border-radius: 6px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,.4);
+        }
+        .panel-title {
+            font-size: .62rem;
+            letter-spacing: .18em;
+            color: rgba(201,168,76,.5);
+            text-align: center;
+            margin-bottom: .8rem;
+            text-transform: uppercase;
+        }
+
+        /* ── 3D Dice ── */
+        .dice-scene {
+            width: 90px;
+            height: 90px;
+            perspective: 350px;
+            margin: 0 auto 1rem;
+            cursor: pointer;
+        }
+        .dice-3d {
+            width: 90px;
+            height: 90px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(25deg);
+            transition: transform 1.2s cubic-bezier(.25,.1,.25,1);
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,.7));
+        }
+        .dice-3d.spin {
+            animation: diceRoll 1s cubic-bezier(.36,.07,.19,.97) forwards;
+        }
+        @keyframes diceRoll {
+            0%   { transform: rotateX(-20deg) rotateY(25deg); }
+            15%  { transform: rotateX(340deg) rotateY(180deg) scale(1.15); }
+            40%  { transform: rotateX(640deg) rotateY(400deg) scale(1.2); }
+            70%  { transform: rotateX(900deg) rotateY(600deg) scale(1.12); }
+            100% { transform: var(--dice-final-rotation); }
+        }
+
+        .d-face {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border: 2px solid rgba(201,168,76,.55);
+            border-radius: 14px;
+            background: radial-gradient(circle at 35% 30%, #fff 50%, #f0ddb0);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 10px;
+            gap: 4px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .dot {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #1a0900;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.5);
+            align-self: center;
+            justify-self: center;
+        }
+        .dot.h { visibility: hidden; }
+
+        /* face transforms: half-size = 45px */
+        .df-front  { transform: translateZ(45px); }
+        .df-back   { transform: rotateY(180deg) translateZ(45px); }
+        .df-right  { transform: rotateY(90deg) translateZ(45px); }
+        .df-left   { transform: rotateY(-90deg) translateZ(45px); }
+        .df-top    { transform: rotateX(90deg) translateZ(45px); }
+        .df-bottom { transform: rotateX(-90deg) translateZ(45px); }
+
+        /* Result rotations to show each face frontally – set via JS inline style */
+
+        /* ── Roll button ── */
+        .btn-roll {
+            width: 100%;
+            background: linear-gradient(135deg, var(--red) 0%, #6b1212 100%);
+            color: #fff;
+            border: 2px solid rgba(201,168,76,.4);
+            padding: .65rem 1rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: .18em;
+            font-size: .78rem;
+            cursor: pointer;
+            transition: all .3s;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+        .btn-roll:hover:not(:disabled) {
+            background: linear-gradient(135deg, #a52222 0%, #8b1a1a 100%);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(201,168,76,.25);
+        }
+        .btn-roll:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ── Status ── */
+        .status-box {
+            background: rgba(201,168,76,.06);
+            border: 1px solid rgba(201,168,76,.18);
+            border-radius: 4px;
+            padding: .6rem .8rem;
+            font-size: .68rem;
+            letter-spacing: .07em;
+            color: rgba(201,168,76,.8);
+            text-align: center;
+            min-height: 2.4rem;
+            line-height: 1.5;
+        }
+
+        /* ── Player selector ── */
+        .players-row {
+            display: flex;
+            gap: .5rem;
+            justify-content: center;
+        }
+        .player-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+            box-shadow:
+                0 3px 8px rgba(0,0,0,.6),
+                inset 0 -3px 5px rgba(0,0,0,.3),
+                inset 0 3px 5px rgba(255,255,255,.3);
+        }
+        .player-btn.active {
+            border-color: var(--gold);
+            transform: scale(1.15);
+            box-shadow: 0 0 14px rgba(201,168,76,.5);
+        }
+        .player-btn:hover:not(.active) { transform: scale(1.08); }
+
+        /* Player colors */
+        .pc-0 { background: radial-gradient(circle at 35% 30%, #ff8080, #c0392b); }
+        .pc-1 { background: radial-gradient(circle at 35% 30%, #80b0ff, #2355b0); }
+        .pc-2 { background: radial-gradient(circle at 35% 30%, #80ff80, #1a8040); }
+        .pc-3 { background: radial-gradient(circle at 35% 30%, #f0c060, #b07010); }
+
+        .player-colors-css { display: none; }
+
+        /* ── Score / position display ── */
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .4rem;
+        }
+        .score-cell {
+            background: rgba(201,168,76,.06);
+            border: 1px solid rgba(201,168,76,.15);
+            border-radius: 3px;
+            padding: .4rem .5rem;
+            font-size: .6rem;
+            letter-spacing: .05em;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .score-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: inset 0 -1px 3px rgba(0,0,0,.4), inset 0 1px 3px rgba(255,255,255,.3);
+        }
+        .score-info { display: flex; flex-direction: column; }
+        .score-name { color: var(--gold); font-size: .6rem; }
+        .score-pos  { color: rgba(201,168,76,.5); font-size: .52rem; }
+    </style>
 </head>
-<body class="h-screen flex flex-col items-center justify-center overflow-hidden">
-    <div class="mb-8 text-center">
-        <h2 class="text-3xl font-bold tracking-[0.5em] uppercase mb-2">Via Romana Core</h2>
-        <div class="h-1 w-full bg-amber-900"><div class="bg-amber-500 h-full w-1/3 animate-pulse"></div></div>
+<body>
+
+<!-- Particle canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Top bar -->
+<div class="top-bar">
+    <a href="../">← VIA ROMANA</a>
+    <span style="font-size:.72rem;letter-spacing:.2em;color:rgba(201,168,76,.5);">SPIELFELD</span>
+    <span class="tagline">Discendo vincimus</span>
+</div>
+
+<div class="main">
+
+    <!-- Title (full width) -->
+    <div class="page-title">
+        <h1>VIA ROMANA</h1>
+        <p>SPIELFELD DER ANTIKEN WELT</p>
     </div>
-    <div id="game-canvas" class="w-[90vw] h-[70vh] bg-stone-900 border-2 border-amber-900/50 flex items-center justify-center shadow-[0_0_50px_rgba(212,175,55,0.1)]">
-        <p class="text-stone-500 italic uppercase tracking-widest">Initialisiere Spielfeld...</p>
+
+    <!-- Board section -->
+    <div class="board-section">
+        <div class="board-outer" id="boardOuter">
+            <!-- rows injected by JS -->
+            <div class="board-row" id="row0"></div>
+            <div class="row-connector" id="conn01">↓ ↓ ↓</div>
+            <div class="board-row reverse" id="row1"></div>
+            <div class="row-connector" style="justify-content:flex-start;" id="conn12">↓ ↓ ↓</div>
+            <div class="board-row" id="row2"></div>
+
+            <div class="legend">
+                <div class="leg-item"><div class="leg-dot" style="background:#4caf50;"></div>Start / Ziel</div>
+                <div class="leg-item"><div class="leg-dot" style="background:var(--red);opacity:.7;"></div>Ortsfeld (hover umdrehen!)</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#7b5ea7;"></div>Ereignis</div>
+                <div class="leg-item"><div class="leg-dot" style="background:rgba(201,168,76,.25);border:1px solid rgba(201,168,76,.3);"></div>Normal</div>
+            </div>
+        </div>
     </div>
-    <a href="../" class="mt-8 text-xs hover:underline opacity-50 uppercase">Zurück zur Hauptseite</a>
+
+    <!-- Controls sidebar -->
+    <div class="controls">
+
+        <!-- Dice panel -->
+        <div class="panel">
+            <div class="panel-title">Würfel</div>
+
+            <!-- 3D Dice -->
+            <div class="dice-scene" id="diceScene" title="Klicken zum Würfeln" role="button" aria-label="Würfeln">
+                <div class="dice-3d" id="dice3d">
+                    <!-- Face 1 (front): 1 dot -->
+                    <div class="d-face df-front">
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
+                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
+                    </div>
+                    <!-- Face 6 (back): 6 dots -->
+                    <div class="d-face df-back">
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                    </div>
+                    <!-- Face 2 (right): 2 dots -->
+                    <div class="d-face df-right">
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot h"></div>
+                    </div>
+                    <!-- Face 5 (left): 5 dots -->
+                    <div class="d-face df-left">
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                    </div>
+                    <!-- Face 3 (top): 3 dots -->
+                    <div class="d-face df-top">
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot h"></div><div class="dot"></div><div class="dot h"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot h"></div>
+                    </div>
+                    <!-- Face 4 (bottom): 4 dots -->
+                    <div class="d-face df-bottom">
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot h"></div><div class="dot"></div>
+                        <div class="dot h"></div><div class="dot h"></div><div class="dot h"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-box" id="status">Wähle einen Spieler und würfle!</div>
+            <br>
+            <button class="btn-roll" id="rollBtn" onclick="rollDice()">⚄ WÜRFELN</button>
+        </div>
+
+        <!-- Players panel -->
+        <div class="panel">
+            <div class="panel-title">Spieler</div>
+            <div class="players-row" id="playersRow"></div>
+        </div>
+
+        <!-- Positions panel -->
+        <div class="panel">
+            <div class="panel-title">Positionen</div>
+            <div class="score-grid" id="scoreGrid"></div>
+        </div>
+
+    </div><!-- /controls -->
+
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   BOARD DEFINITION
+═══════════════════════════════════════════════ */
+const IMG = {
+    landgut:   'https://github.com/user-attachments/assets/5a8b5dae-646f-4ac4-b065-16ef7a23906d',
+    mietshaus: 'https://github.com/user-attachments/assets/01b886b3-f7ab-459f-bdd9-e3e599dae807',
+    schule:    'https://github.com/user-attachments/assets/61a552f4-87de-4bbb-be65-97b96b1ebf17',
+    forum:     'https://github.com/user-attachments/assets/b16a7576-c8bf-403a-a618-31e361a15a13',
+    thermen:   'https://github.com/user-attachments/assets/d447fff4-52d5-445f-ab4d-40ad13cb63d4',
+    colosseum: 'https://github.com/user-attachments/assets/b8e460fd-4226-40b1-b3d7-8e7eb7691c9c',
+    kapitol:   'https://github.com/user-attachments/assets/ea4690d1-4033-459c-969e-86cfdbfe1bcb',
+};
+
+// 27 fields (0-26), 3 rows × 9 per row, snake pattern
+// Row 0 (L→R): indices 0-8
+// Row 1 (R→L display): indices 9-17  (DOM order 9..17, flex-direction:row-reverse makes 9=rightmost)
+// Row 2 (L→R): indices 18-26
+const FIELDS = [
+    // ── Row 0 ──
+    { t:'start', icon:'🏁', label:'START',      desc:'' },
+    { t:'plain', icon:'',   label:'I',          desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'plain', icon:'',   label:'II',         desc:'' },
+    { t:'loc',   icon:'',   label:'LANDGUT',    img:'landgut',   desc:'Die Villa Rustica – Landgut wohlhabender Römer außerhalb der Stadt.' },
+    { t:'plain', icon:'',   label:'III',        desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'plain', icon:'',   label:'IV',         desc:'' },
+    { t:'loc',   icon:'',   label:'MIETSHAUS',  img:'mietshaus', desc:'Die Insula – mehrstöckiges Mietshaus, Zuhause der einfachen Römer.' },
+    // ── Row 1 ──
+    { t:'plain', icon:'',   label:'V',          desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'plain', icon:'',   label:'VI',         desc:'' },
+    { t:'loc',   icon:'',   label:'SCHULE',     img:'schule',    desc:'In der Ludus Litterarius lernten Kinder Lesen, Schreiben und Rechnen.' },
+    { t:'plain', icon:'',   label:'VII',        desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'plain', icon:'',   label:'VIII',       desc:'' },
+    { t:'loc',   icon:'',   label:'FORUM ROM.', img:'forum',     desc:'Das Forum Romanum – politisches und religiöses Zentrum des Imperiums.' },
+    { t:'plain', icon:'',   label:'IX',         desc:'' },
+    // ── Row 2 ──
+    { t:'loc',   icon:'',   label:'THERMEN',    img:'thermen',   desc:'Die Thermen – öffentliche Badeanlagen und gesellschaftliche Treffpunkte.' },
+    { t:'plain', icon:'',   label:'X',          desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'plain', icon:'',   label:'XI',         desc:'' },
+    { t:'loc',   icon:'',   label:'COLOSSEUM',  img:'colosseum', desc:'Das Kolosseum – gigantisches Amphitheater mit Platz für 50.000 Zuschauer.' },
+    { t:'plain', icon:'',   label:'XII',        desc:'' },
+    { t:'event', icon:'🎴', label:'EREIGNIS',   desc:'Ziehe eine Ereigniskarte!' },
+    { t:'loc',   icon:'',   label:'KAPITOL',    img:'kapitol',   desc:'Das Kapitol – heiliger Hügel Roms, Sitz des Jupitertempels.' },
+    { t:'end',   icon:'🏆', label:'VIKTORIA!',  desc:'Du hast gewonnen!' },
+];
+const TOTAL = FIELDS.length; // 27
+
+/* ═══════════════════════════════════════════════
+   PLAYER STATE
+═══════════════════════════════════════════════ */
+const PLAYER_COLORS = ['#c0392b','#2355b0','#1a8040','#b07010'];
+const PLAYER_LABELS = ['I','II','III','IV'];
+const NUM_PLAYERS   = 4;
+
+let positions    = [0, 0, 0, 0]; // field indices
+let activePlayer = 0;
+let rolling      = false;
+
+/* ═══════════════════════════════════════════════
+   BUILD BOARD
+═══════════════════════════════════════════════ */
+function buildBoard() {
+    const rows = [
+        { el: document.getElementById('row0'), indices: [0,1,2,3,4,5,6,7,8],   reverse: false },
+        { el: document.getElementById('row1'), indices: [9,10,11,12,13,14,15,16,17], reverse: true  },
+        { el: document.getElementById('row2'), indices: [18,19,20,21,22,23,24,25,26], reverse: false },
+    ];
+
+    rows.forEach(({ el, indices }) => {
+        // For the reversed row we render in normal DOM order;
+        // flex-direction:row-reverse on the container handles visual reversal.
+        indices.forEach(i => {
+            const f  = FIELDS[i];
+            const div = document.createElement('div');
+            div.id = 'field-' + i;
+
+            if (f.t === 'loc') {
+                div.className = 'field field-loc';
+                div.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-front"
+                             style="background-image:url('${IMG[f.img]}')">
+                            <span class="card-front-label">${f.label}</span>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="card-back-name">${f.label}</div>
+                            <div class="card-back-desc">${f.desc}</div>
+                        </div>
+                    </div>`;
+            } else if (f.t === 'start' || f.t === 'end') {
+                div.className = 'field field-' + f.t;
+                div.innerHTML = `<span class="field-icon">${f.icon}</span><span class="field-lbl">${f.label}</span>`;
+            } else if (f.t === 'event') {
+                div.className = 'field field-event';
+                div.innerHTML = `<span class="field-icon">${f.icon}</span><span class="field-lbl" style="font-size:.32rem;">${f.label}</span>`;
+            } else {
+                div.className = 'field field-plain';
+                div.innerHTML = `<span class="field-num">${f.label}</span>`;
+            }
+            el.appendChild(div);
+        });
+    });
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER TOKENS
+═══════════════════════════════════════════════ */
+function renderTokens() {
+    // Remove old tokens
+    document.querySelectorAll('.token').forEach(t => t.remove());
+
+    positions.forEach((pos, pi) => {
+        const fieldEl = document.getElementById('field-' + pos);
+        if (!fieldEl) return;
+        const tok = document.createElement('div');
+        tok.className = 'token';
+        tok.style.background = `radial-gradient(circle at 35% 30%, ${lighten(PLAYER_COLORS[pi])}, ${PLAYER_COLORS[pi]})`;
+        // offset tokens if multiple on same field
+        const sameField = positions.slice(0, pi).filter(p => p === pos).length;
+        const offsets = ['5%','40%','5%','40%'];
+        const topOff  = ['5%','5%','55%','55%'];
+        tok.style.left = offsets[sameField];
+        tok.style.top  = topOff[sameField];
+        fieldEl.appendChild(tok);
+    });
+}
+
+function lighten(hex) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgb(${Math.min(255,r+80)},${Math.min(255,g+80)},${Math.min(255,b+80)})`;
+}
+
+/* ═══════════════════════════════════════════════
+   PLAYER BUTTONS + SCORE GRID
+═══════════════════════════════════════════════ */
+function buildPlayerUI() {
+    const row  = document.getElementById('playersRow');
+    const grid = document.getElementById('scoreGrid');
+    row.innerHTML  = '';
+    grid.innerHTML = '';
+
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+        // Button
+        const btn = document.createElement('button');
+        btn.className = 'player-btn pc-' + i + (i === activePlayer ? ' active' : '');
+        btn.title = 'Spieler ' + PLAYER_LABELS[i];
+        btn.setAttribute('aria-label', 'Spieler ' + PLAYER_LABELS[i]);
+        btn.onclick = () => selectPlayer(i);
+        row.appendChild(btn);
+
+        // Score cell
+        const cell = document.createElement('div');
+        cell.className = 'score-cell';
+        cell.id = 'score-' + i;
+        cell.innerHTML = `
+            <div class="score-dot" style="background:radial-gradient(circle at 35% 30%,${lighten(PLAYER_COLORS[i])},${PLAYER_COLORS[i]})"></div>
+            <div class="score-info">
+                <span class="score-name">Spieler ${PLAYER_LABELS[i]}</span>
+                <span class="score-pos" id="spos-${i}">Feld 1</span>
+            </div>`;
+        grid.appendChild(cell);
+    }
+    updateScoreDisplay();
+}
+
+function selectPlayer(i) {
+    activePlayer = i;
+    document.querySelectorAll('.player-btn').forEach((b,j) => {
+        b.classList.toggle('active', j === i);
+    });
+}
+
+function updateScoreDisplay() {
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+        const el = document.getElementById('spos-' + i);
+        if (el) {
+            const f = FIELDS[positions[i]];
+            el.textContent = 'Feld ' + (positions[i] + 1) + (f.label ? ' · ' + f.label : '');
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   3D DICE ROLL
+═══════════════════════════════════════════════ */
+// Rotations that bring each face to face the viewerconst DICE_ROTATIONS = {
+    1: 'rotateX(-20deg) rotateY(25deg)',    // face 1 = front
+    2: 'rotateX(-20deg) rotateY(-65deg)',   // face 2 = right side
+    3: 'rotateX(-110deg) rotateY(25deg)',   // face 3 = top
+    4: 'rotateX(70deg) rotateY(25deg)',     // face 4 = bottom
+    5: 'rotateX(-20deg) rotateY(115deg)',   // face 5 = left side
+    6: 'rotateX(-20deg) rotateY(205deg)',   // face 6 = back
+};
+
+function rollDice() {
+    if (rolling) return;
+    rolling = true;
+    document.getElementById('rollBtn').disabled = true;
+
+    const result = Math.floor(Math.random() * 6) + 1;
+    const dice3d = document.getElementById('dice3d');
+
+    // Set the target rotation as inline style (inline overrides class, so use it directly)
+    dice3d.style.setProperty('--dice-final-rotation', DICE_ROTATIONS[result]);
+
+    // Trigger spin animation
+    dice3d.classList.remove('spin');
+    void dice3d.offsetWidth; // reflow
+    dice3d.classList.add('spin');
+
+    document.getElementById('status').innerHTML =
+        'Würfeln&hellip; <strong style="color:var(--gold2);">●●●</strong>';
+
+    setTimeout(() => {
+        // Move token
+        const oldPos = positions[activePlayer];
+        let newPos   = Math.min(oldPos + result, TOTAL - 1);
+        positions[activePlayer] = newPos;
+
+        // Highlight field
+        const fieldEl = document.getElementById('field-' + newPos);
+        if (fieldEl) {
+            fieldEl.style.transition = 'box-shadow .3s';
+            fieldEl.style.boxShadow  = '0 0 30px ' + PLAYER_COLORS[activePlayer];
+            setTimeout(() => { fieldEl.style.boxShadow = ''; }, 1200);
+        }
+
+        renderTokens();
+        updateScoreDisplay();
+
+        const f = FIELDS[newPos];
+        let msg;
+        if (newPos >= TOTAL - 1) {
+            msg = `<strong style="color:var(--gold2);">VIKTORIA! Spieler ${PLAYER_LABELS[activePlayer]} gewinnt! 🏆</strong>`;
+        } else {
+            msg = `Spieler <strong style="color:${PLAYER_COLORS[activePlayer]};">${PLAYER_LABELS[activePlayer]}</strong> würfelt eine
+                   <strong style="color:var(--gold2);">${result}</strong>
+                   → ${f.label || ('Feld ' + (newPos + 1))}`;
+            if (f.t === 'event') msg += ' · <em style="color:#b090d0;">Ziehe eine Ereigniskarte!</em>';
+        }
+        document.getElementById('status').innerHTML = msg;
+
+        rolling = false;
+        document.getElementById('rollBtn').disabled = false;
+    }, 1250);
+}
+
+// Click on dice = roll
+document.getElementById('diceScene').addEventListener('click', rollDice);
+document.addEventListener('keydown', e => {
+    if ((e.key === ' ' || e.key === 'Enter') && !rolling) rollDice();
+});
+
+/* ═══════════════════════════════════════════════
+   PARTICLE BACKGROUND
+═══════════════════════════════════════════════ */
+(function initParticles() {
+    const canvas = document.getElementById('particles');
+    const ctx    = canvas.getContext('2d');
+    let W, H;
+    const DOTS = 70;
+    const dots = [];
+
+    function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    for (let i = 0; i < DOTS; i++) {
+        dots.push({
+            x:  Math.random() * W,
+            y:  Math.random() * H,
+            r:  Math.random() * 1.4 + .4,
+            vx: (Math.random() - .5) * .3,
+            vy: (Math.random() - .5) * .3,
+            a:  Math.random(),
+            da: (Math.random() * .008 + .003) * (Math.random() < .5 ? 1 : -1),
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        dots.forEach(d => {
+            d.x  = (d.x + d.vx + W) % W;
+            d.y  = (d.y + d.vy + H) % H;
+            d.a += d.da;
+            if (d.a > 1 || d.a < 0) d.da *= -1;
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201,168,76,${d.a * .65})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+buildBoard();
+buildPlayerUI();
+renderTokens();
+</script>
 </body>
 </html>
