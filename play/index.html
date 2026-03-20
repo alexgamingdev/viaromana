@@ -725,9 +725,10 @@
     };
 
     // Auto-save after every dice roll.
-    // The 1400 ms delay matches the dice-roll animation duration (1250 ms roll + buffer)
-    // so positions are saved once the move is finalized.
-    const AUTO_SAVE_DELAY_MS = 1400;
+    // DICE_ROLL_MS matches the setTimeout in rollDice() that finalises the move;
+    // AUTO_SAVE_DELAY_MS adds a small buffer so the save fires after positions are updated.
+    const DICE_ROLL_MS     = 1250;
+    const AUTO_SAVE_DELAY_MS = DICE_ROLL_MS + 150;
     const _origRollDice = window.rollDice;
     if (typeof _origRollDice === 'function') {
         window.rollDice = function () {

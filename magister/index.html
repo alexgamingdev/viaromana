@@ -76,13 +76,14 @@
                     list.innerHTML = '<p class="text-sm" style="color:#9a8a7a;">Keine aktiven Spielsitzungen.</p>';
                     return;
                 }
-                entries.forEach(([key, game]) => {
+        // Session display: show first N characters of the DB key as a short preview label
+        const SESSION_KEY_PREVIEW_LENGTH = 6;
+        entries.forEach(([key, game]) => {
                     const div = document.createElement('div');
                     div.className = 'game-entry';
                     const players = game.positions
                         ? Object.values(game.positions).map((p, i) => `Spieler ${i + 1}: Feld ${p + 1}`).join(' · ')
                         : '—';
-                    const SESSION_KEY_PREVIEW_LENGTH = 6;
                     div.innerHTML = `
                         <div style="flex:1;">
                             <strong class="font-roman" style="font-size:.85rem;color:var(--roman-red);">${game.name || ('Sitzung ' + key.slice(0, SESSION_KEY_PREVIEW_LENGTH))}</strong>
