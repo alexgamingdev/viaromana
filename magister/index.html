@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8"><title>Magister Portal | Übersicht</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 font-serif">
+    <nav class="bg-stone-900 text-white p-6 shadow-xl flex justify-between items-center">
+        <span class="text-xl font-bold tracking-widest uppercase">Magister Dashboard</span>
+        <a href="../" class="text-xs border border-white/20 px-3 py-1 rounded">Logout</a>
+    </nav>
+    <main class="p-10 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-red-950 mb-10">Willkommen, Magister.</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded shadow-lg border-t-4 border-red-900">
+                <h3 class="font-bold mb-4 uppercase text-sm">Lernfortschritt</h3>
+                <p class="text-3xl font-bold text-green-700">78%</p>
+                <p class="text-xs text-stone-400 mt-2">Durchschnitt aller Klassen</p>
+            </div>
+            <div class="bg-white p-8 rounded shadow-lg border-t-4 border-red-900">
+                <h3 class="font-bold mb-4 uppercase text-sm">Aktivität</h3>
+                <p class="text-3xl font-bold text-amber-700">24</p>
+                <p class="text-xs text-stone-400 mt-2">Schüler aktuell online</p>
+            </div>
+            <div class="bg-white p-8 rounded shadow-lg border-t-4 border-red-900 flex flex-col justify-between">
+                <h3 class="font-bold mb-4 uppercase text-sm">Vokabeltest</h3>
+                <button class="bg-red-950 text-white py-2 rounded text-sm font-bold">NEUEN TEST STARTEN</button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
