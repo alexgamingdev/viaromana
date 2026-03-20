@@ -529,6 +529,129 @@
             }
         }
 
+        /* ═══════════════════════════════════════
+           EVENT CARD MODAL
+        ═══════════════════════════════════════ */
+        #eventModal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,.78);
+            backdrop-filter: blur(5px);
+            animation: fadeInModal .3s ease;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .event-card-scene {
+            perspective: 1000px;
+            width: 260px;
+            height: 380px;
+        }
+        .event-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform .85s cubic-bezier(.4,0,.2,1);
+        }
+        .event-card-inner.flipped { transform: rotateY(180deg); }
+
+        .event-card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.4rem;
+        }
+        .event-card-front {
+            background: linear-gradient(145deg, #1e0a3c, #0d051a);
+            border: 2px solid rgba(160,120,200,.6);
+            box-shadow:
+                0 0 50px rgba(123,94,167,.45),
+                0 20px 60px rgba(0,0,0,.7);
+        }
+        .ecfront-icon  { font-size: 4rem; margin-bottom: .9rem; filter: drop-shadow(0 0 12px rgba(160,120,200,.8)); }
+        .ecfront-label { font-size: .72rem; letter-spacing: .28em; color: rgba(160,120,200,.9); text-transform: uppercase; }
+        .ecfront-sub   { font-size: .52rem; letter-spacing: .18em; color: rgba(160,120,200,.4); margin-top: .4rem; }
+
+        .event-card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(160deg, #110900, #0a0500);
+            border: 2px solid rgba(201,168,76,.55);
+            box-shadow:
+                0 0 40px rgba(201,168,76,.22),
+                0 20px 60px rgba(0,0,0,.7);
+            justify-content: flex-start;
+            padding: 1.3rem 1.2rem;
+        }
+        .ecback-type   {
+            font-size: .5rem;
+            letter-spacing: .22em;
+            color: rgba(160,120,200,.6);
+            text-transform: uppercase;
+            margin-bottom: .6rem;
+            align-self: flex-start;
+        }
+        .ecback-cardicon { font-size: 2.1rem; margin-bottom: .55rem; }
+        .ecback-title  {
+            font-size: .9rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            color: var(--gold2);
+            margin-bottom: .7rem;
+            text-align: center;
+            line-height: 1.3;
+        }
+        .ecback-desc   {
+            font-size: .6rem;
+            letter-spacing: .05em;
+            color: rgba(201,168,76,.7);
+            text-align: center;
+            line-height: 1.65;
+            margin-bottom: .9rem;
+            flex: 1;
+        }
+        .ecback-effect {
+            font-size: .66rem;
+            letter-spacing: .08em;
+            font-weight: 700;
+            text-align: center;
+            padding: .45rem .9rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        .effect-positive { background: rgba(76,175,80,.18); border: 1px solid rgba(76,175,80,.45); color: #80d080; }
+        .effect-negative { background: rgba(139,26,26,.22); border: 1px solid rgba(139,26,26,.5);  color: #d08080; }
+        .effect-skip     { background: rgba(201,168,76,.12); border: 1px solid rgba(201,168,76,.38); color: var(--gold); }
+        .effect-neutral  { background: rgba(201,168,76,.07); border: 1px solid rgba(201,168,76,.2);  color: rgba(201,168,76,.65); }
+
+        .btn-card-close {
+            width: 100%;
+            background: linear-gradient(135deg, #7b5ea7 0%, #5a3d85 100%);
+            color: #fff;
+            border: 1px solid rgba(160,120,200,.45);
+            padding: .5rem;
+            font-family: 'Cinzel', serif;
+            font-size: .68rem;
+            letter-spacing: .2em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background .2s;
+            text-transform: uppercase;
+        }
+        .btn-card-close:hover { background: linear-gradient(135deg, #9070c0 0%, #7b5ea7 100%); }
+
     </style>
 </head>
 <body>
@@ -641,6 +764,29 @@
 
 </div><!-- /main -->
 
+<!-- ── Event Card Modal ── -->
+<div id="eventModal" style="display:none;">
+    <div class="event-card-scene">
+        <div class="event-card-inner" id="eventCardInner">
+            <!-- Front (face-down design) -->
+            <div class="event-card-face event-card-front">
+                <div class="ecfront-icon">🎴</div>
+                <div class="ecfront-label">EREIGNIS</div>
+                <div class="ecfront-sub">VIA ROMANA</div>
+            </div>
+            <!-- Back (the drawn event) -->
+            <div class="event-card-face event-card-back">
+                <div class="ecback-type" id="ecType">EREIGNISKARTE</div>
+                <div class="ecback-cardicon" id="ecIcon"></div>
+                <div class="ecback-title" id="ecTitle"></div>
+                <div class="ecback-desc"  id="ecDesc"></div>
+                <div class="ecback-effect" id="ecEffect"></div>
+                <button class="btn-card-close" id="ecCloseBtn" onclick="dismissEventCard()">WEITER</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════
    BOARD DEFINITION
@@ -694,6 +840,63 @@ const FIELDS = [
 const TOTAL = FIELDS.length; // 27
 
 /* ═══════════════════════════════════════════════
+   EVENT CARDS
+═══════════════════════════════════════════════ */
+const EVENT_CARDS = [
+    { icon:'🏆', titleDe:'Triumph!',              titleEn:'Triumph!',
+      descDe:'Ein Feldherr kehrt siegreich nach Rom zurück. Die Stadt jubelt dir zu!',
+      descEn:'A general returns victorious to Rome. The city cheers for you!',
+      effect: +3 },
+    { icon:'⚔️', titleDe:'Gladiatorenkampf',      titleEn:'Gladiatorial Combat',
+      descDe:'Du gewinnst deine Wette im Kolosseum. Glück ist auf deiner Seite!',
+      descEn:'You win your bet at the Colosseum. Luck is on your side!',
+      effect: +2 },
+    { icon:'🌊', titleDe:'Tiberüberschwemmung',   titleEn:'Tiber Flood',
+      descDe:'Der Tiber tritt über die Ufer und überflutet die Straßen der Stadt.',
+      descEn:'The Tiber bursts its banks and floods the streets of the city.',
+      effect: -2 },
+    { icon:'📜', titleDe:'Kaiserlicher Erlass',   titleEn:'Imperial Decree',
+      descDe:'Der Kaiser gewährt dir eine besondere Gunst. Du bist geehrt!',
+      descEn:'The emperor grants you a special favor. You are honored!',
+      effect: +1 },
+    { icon:'🌾', titleDe:'Schlechte Ernte',        titleEn:'Poor Harvest',
+      descDe:'Die Ernte fällt schlecht aus. Hunger und Unruhe breiten sich aus.',
+      descEn:'The harvest fails. Hunger and unrest spread across the city.',
+      effect: -3 },
+    { icon:'🐎', titleDe:'Wagenrennen',            titleEn:'Chariot Race',
+      descDe:'Dein Gespann gewinnt beim Circus Maximus! Die Menge tobt vor Begeisterung.',
+      descEn:'Your team wins at the Circus Maximus! The crowd erupts with excitement.',
+      effect: +4 },
+    { icon:'🤒', titleDe:'Erkrankung',             titleEn:'Illness',
+      descDe:'Du wirst krank und musst dich erholen. Deine Mitspieler ziehen vorbei.',
+      descEn:'You fall ill and must recover. Your fellow players move on without you.',
+      effect: 0, skip: true },
+    { icon:'⚡', titleDe:'Gunst der Götter',       titleEn:'Favor of the Gods',
+      descDe:'Jupiter schenkt dir seinen Segen. Die Götter sind dir wohlgesonnen!',
+      descEn:'Jupiter grants you his blessing. The gods smile upon you!',
+      effect: +2 },
+    { icon:'🔥', titleDe:'Unruhen in der Stadt',   titleEn:'City Unrest',
+      descDe:'Unruhen erschüttern die Stadt. Du musst einen langen Umweg nehmen.',
+      descEn:'Unrest shakes the city. You must take a lengthy detour.',
+      effect: -1 },
+    { icon:'🏛️', titleDe:'Senatssitzung',          titleEn:'Senate Session',
+      descDe:'Du wirst in eine endlose Senatssitzung gezogen. Die Zeit vergeht.',
+      descEn:'You are drawn into an endless senate session. Time slips away.',
+      effect: 0, skip: true },
+    { icon:'🍷', titleDe:'Festmahl',               titleEn:'Banquet',
+      descDe:'Ein prächtiges Festmahl beim Senator. Du genießt die Gastfreundschaft.',
+      descEn:"A magnificent banquet at the senator's villa. You enjoy the hospitality.",
+      effect: 0 },
+    { icon:'🪽', titleDe:'Geschenk des Merkur',    titleEn:'Gift of Mercury',
+      descDe:'Der Götterbote beschenkt dich mit Schnelligkeit und Glück.',
+      descEn:'The messenger god blesses you with speed and fortune.',
+      effect: +3 },
+];
+
+let skippedTurns    = [0, 0, 0, 0]; // one entry per player (matches NUM_PLAYERS)
+let pendingCardEffect = null;
+
+/* ═══════════════════════════════════════════════
    PLAYER STATE
 ═══════════════════════════════════════════════ */
 const PLAYER_COLORS = ['#c0392b','#2355b0','#1a8040','#b07010'];
@@ -713,7 +916,15 @@ const TXT = {
         dice: 'Würfel',
         players: 'Spieler',
         positions: 'Positionen',
-        rollBtn: '⚄ WÜRFELN'
+        rollBtn: '⚄ WÜRFELN',
+        cardType: 'EREIGNISKARTE',
+        cardClose: 'WEITER',
+        effectForward:  (n) => `⬆ ${n} Feld${n === 1 ? '' : 'er'} vor`,
+        effectBackward: (n) => `⬇ ${n} Feld${n === 1 ? '' : 'er'} zurück`,
+        effectSkip:  '⏭ Setze eine Runde aus',
+        effectNone:  '→ Bleib auf deinem Feld',
+        skipNotice: (label, color) => `Spieler <strong style="color:${color};">${label}</strong> setzt diese Runde aus.`,
+        cardMoved: (label, color, eff, target) => `Spieler <strong style="color:${color};">${label}</strong>: ${eff} → ${target}`,
     },
     en: {
         choose: 'Choose a player and roll!',
@@ -726,7 +937,15 @@ const TXT = {
         dice: 'Dice',
         players: 'Players',
         positions: 'Positions',
-        rollBtn: '⚄ ROLL'
+        rollBtn: '⚄ ROLL',
+        cardType: 'EVENT CARD',
+        cardClose: 'CONTINUE',
+        effectForward:  (n) => `⬆ Move forward ${n} space${n === 1 ? '' : 's'}`,
+        effectBackward: (n) => `⬇ Move back ${n} space${n === 1 ? '' : 's'}`,
+        effectSkip:  '⏭ Skip next turn',
+        effectNone:  '→ Stay on your field',
+        skipNotice: (label, color) => `Player <strong style="color:${color};">${label}</strong> skips this turn.`,
+        cardMoved: (label, color, eff, target) => `Player <strong style="color:${color};">${label}</strong>: ${eff} → ${target}`,
     }
 };
 
@@ -813,6 +1032,96 @@ function lighten(hex) {
 }
 
 /* ═══════════════════════════════════════════════
+   EVENT CARD FUNCTIONS
+═══════════════════════════════════════════════ */
+function drawEventCard() {
+    const card = EVENT_CARDS[Math.floor(Math.random() * EVENT_CARDS.length)];
+    pendingCardEffect = card;
+    showCardModal(card);
+}
+
+function showCardModal(card) {
+    const tx    = t();
+    const modal = document.getElementById('eventModal');
+    const inner = document.getElementById('eventCardInner');
+
+    document.getElementById('ecType').textContent  = tx.cardType;
+    document.getElementById('ecIcon').textContent  = card.icon;
+    document.getElementById('ecTitle').textContent = currentLang === 'de' ? card.titleDe : card.titleEn;
+    document.getElementById('ecDesc').textContent  = currentLang === 'de' ? card.descDe  : card.descEn;
+    document.getElementById('ecCloseBtn').textContent = tx.cardClose;
+
+    const effEl = document.getElementById('ecEffect');
+    if (card.skip) {
+        effEl.textContent = tx.effectSkip;
+        effEl.className   = 'ecback-effect effect-skip';
+    } else if (card.effect > 0) {
+        effEl.textContent = tx.effectForward(card.effect);
+        effEl.className   = 'ecback-effect effect-positive';
+    } else if (card.effect < 0) {
+        effEl.textContent = tx.effectBackward(Math.abs(card.effect));
+        effEl.className   = 'ecback-effect effect-negative';
+    } else {
+        effEl.textContent = tx.effectNone;
+        effEl.className   = 'ecback-effect effect-neutral';
+    }
+
+    inner.classList.remove('flipped');
+    modal.style.display = 'flex';
+    // Auto-flip after a short pause so the player sees the face-down card first
+    setTimeout(() => inner.classList.add('flipped'), 420);
+}
+
+function dismissEventCard() {
+    document.getElementById('eventModal').style.display = 'none';
+    const card = pendingCardEffect;
+    pendingCardEffect = null;
+    applyCardEffect(card);
+    rolling = false;
+    document.getElementById('rollBtn').disabled = false;
+}
+
+function applyCardEffect(card) {
+    if (!card) return;
+    const pi    = activePlayer;
+    const tx    = t();
+    const color = PLAYER_COLORS[pi];
+    const label = PLAYER_LABELS[pi];
+
+    if (card.skip) {
+        skippedTurns[pi]++;
+    }
+
+    if (card.effect !== 0) {
+        const newPos = Math.max(0, Math.min(positions[pi] + card.effect, TOTAL - 1));
+        positions[pi] = newPos;
+        renderTokens();
+        updateScoreDisplay();
+
+        const fieldEl = document.getElementById('field-' + newPos);
+        if (fieldEl) {
+            fieldEl.style.transition = 'box-shadow .3s';
+            fieldEl.style.boxShadow  = '0 0 30px ' + color;
+            setTimeout(() => { fieldEl.style.boxShadow = ''; }, 1200);
+        }
+
+        const f = FIELDS[newPos];
+        const effText = card.effect > 0
+            ? tx.effectForward(card.effect)
+            : tx.effectBackward(Math.abs(card.effect));
+        const target = f.label || ('Feld ' + (newPos + 1));
+
+        if (newPos >= TOTAL - 1) {
+            document.getElementById('status').innerHTML = tx.victory(label);
+        } else {
+            document.getElementById('status').innerHTML = tx.cardMoved(label, color, effText, target);
+        }
+    } else if (card.skip) {
+        document.getElementById('status').innerHTML = tx.skipNotice(label, color);
+    }
+}
+
+/* ═══════════════════════════════════════════════
    PLAYER BUTTONS + SCORE GRID
 ═══════════════════════════════════════════════ */
 function buildPlayerUI() {
@@ -879,6 +1188,15 @@ let currentY = 28;
 
 function rollDice() {
     if (rolling) return;
+
+    // Check if this player must skip a turn
+    if (skippedTurns[activePlayer] > 0) {
+        skippedTurns[activePlayer]--;
+        document.getElementById('status').innerHTML =
+            t().skipNotice(PLAYER_LABELS[activePlayer], PLAYER_COLORS[activePlayer]);
+        return;
+    }
+
     rolling = true;
     document.getElementById('rollBtn').disabled = true;
 
@@ -917,17 +1235,21 @@ function rollDice() {
         updateScoreDisplay();
 
         const f = FIELDS[newPos];
-        let msg;
         if (newPos >= TOTAL - 1) {
-            msg = t().victory(PLAYER_LABELS[activePlayer]);
+            document.getElementById('status').innerHTML = t().victory(PLAYER_LABELS[activePlayer]);
+            rolling = false;
+            document.getElementById('rollBtn').disabled = false;
+        } else if (f.t === 'event') {
+            document.getElementById('status').innerHTML =
+                t().rolled(activePlayer, result, f.label || ('Feld ' + (newPos + 1)));
+            // Keep rolling=true and button disabled until card is dismissed
+            drawEventCard();
         } else {
-            msg = t().rolled(activePlayer, result, f.label || ('Feld ' + (newPos + 1)));
-            if (f.t === 'event') msg += t().eventHint;
+            document.getElementById('status').innerHTML =
+                t().rolled(activePlayer, result, f.label || ('Feld ' + (newPos + 1)));
+            rolling = false;
+            document.getElementById('rollBtn').disabled = false;
         }
-        document.getElementById('status').innerHTML = msg;
-
-        rolling = false;
-        document.getElementById('rollBtn').disabled = false;
     }, 1250);
 }
 
