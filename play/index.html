@@ -620,9 +620,122 @@
             <div class="score-grid" id="scoreGrid"></div>
         </div>
 
+        <!-- Firebase session panel -->
+        <div class="panel" id="fbPanel">
+            <div class="panel-title">Sitzung (Cloud)</div>
+            <div style="margin-bottom:.6rem;">
+                <input id="sessionCodeInput" type="text" placeholder="Sitzungscode" maxlength="20"
+                    style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.25);
+                           color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;padding:.45rem .7rem;
+                           border-radius:4px;outline:none;letter-spacing:.05em;" />
+            </div>
+            <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
+                <button onclick="fbJoinSession()" style="flex:1;background:rgba(201,168,76,.15);
+                    border:1px solid rgba(201,168,76,.35);color:var(--gold);font-family:'Cinzel',serif;
+                    font-size:.65rem;letter-spacing:.08em;padding:.4rem;cursor:pointer;transition:all .25s;"
+                    onmouseover="this.style.background='rgba(201,168,76,.25)'"
+                    onmouseout="this.style.background='rgba(201,168,76,.15)'">BEITRETEN</button>
+                <button onclick="fbSaveState()" style="flex:1;background:rgba(139,26,26,.2);
+                    border:1px solid rgba(139,26,26,.45);color:#e07070;font-family:'Cinzel',serif;
+                    font-size:.65rem;letter-spacing:.08em;padding:.4rem;cursor:pointer;transition:all .25s;"
+                    onmouseover="this.style.background='rgba(139,26,26,.35)'"
+                    onmouseout="this.style.background='rgba(139,26,26,.2)'">SPEICHERN</button>
+            </div>
+            <div id="fbStatus" style="font-size:.6rem;color:rgba(201,168,76,.45);letter-spacing:.04em;min-height:1.2rem;"></div>
+        </div>
+
     </div><!-- /controls -->
 
 </div><!-- /main -->
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase, ref, set, onValue }
+        from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+    // ── Firebase configuration ─────────────────────────────────────────────
+    // TODO: Replace the values below with your Firebase project config.
+    // Find them in the Firebase Console → Project Settings → Your apps → SDK setup.
+    const firebaseConfig = {
+        apiKey:            "YOUR_API_KEY",
+        authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL:       "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+        projectId:         "YOUR_PROJECT_ID",
+        storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId:             "YOUR_APP_ID"
+    };
+    // ──────────────────────────────────────────────────────────────────────
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+
+    let sessionKey = null;
+    let unsubscribe = null;
+
+    function setFbStatus(msg) {
+        const el = document.getElementById('fbStatus');
+        if (el) el.textContent = msg;
+    }
+
+    // Join / create a session by code
+    window.fbJoinSession = function () {
+        const code = document.getElementById('sessionCodeInput').value.trim();
+        if (!code) { setFbStatus('Bitte Sitzungscode eingeben.'); return; }
+        if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+            setFbStatus('Ungültiger Code: nur Buchstaben, Ziffern, - und _ erlaubt.');
+            return;
+        }
+        sessionKey = 'games/' + code;
+
+        if (unsubscribe) unsubscribe();
+
+        // Listen for remote state changes
+        const gameRef = ref(db, sessionKey);
+        unsubscribe = onValue(gameRef, snapshot => {
+            const data = snapshot.val();
+            if (!data) { setFbStatus('Neue Sitzung: ' + code); return; }
+            // Apply remote positions if they differ
+            if (data.positions) {
+                const remote = data.positions;
+                let changed = false;
+                remote.forEach((p, i) => {
+                    if (positions[i] !== p) { positions[i] = p; changed = true; }
+                });
+                if (changed) { renderTokens(); updateScoreDisplay(); }
+            }
+            if (data.activePlayer !== undefined && data.activePlayer !== activePlayer) {
+                activePlayer = data.activePlayer;
+                buildPlayerUI();
+            }
+            setFbStatus('Verbunden: ' + code);
+        });
+    };
+
+    // Push current state to Firebase
+    window.fbSaveState = function () {
+        if (!sessionKey) { setFbStatus('Zuerst Sitzung beitreten.'); return; }
+        set(ref(db, sessionKey), {
+            name:         document.getElementById('sessionCodeInput').value.trim(),
+            positions:    positions,
+            activePlayer: activePlayer,
+            updatedAt:    Date.now()
+        }).then(() => setFbStatus('Gespeichert ✓')).catch(e => setFbStatus('Fehler: ' + e.message));
+    };
+
+    // Auto-save after every dice roll.
+    // The 1400 ms delay matches the dice-roll animation duration (1250 ms roll + buffer)
+    // so positions are saved once the move is finalized.
+    const AUTO_SAVE_DELAY_MS = 1400;
+    const _origRollDice = window.rollDice;
+    if (typeof _origRollDice === 'function') {
+        window.rollDice = function () {
+            _origRollDice();
+            setTimeout(() => { if (sessionKey) window.fbSaveState(); }, AUTO_SAVE_DELAY_MS);
+        };
+    }
+</script>
 
 <script>
 /* ═══════════════════════════════════════════════

@@ -91,24 +91,7 @@
             z-index: 3;
         }
 
-        /* Flame animations */
-        @keyframes flicker {
-            0%,100% { transform: scaleY(1)    scaleX(1)    rotate(-2deg); opacity: .9; }
-            25%      { transform: scaleY(1.12) scaleX(0.88) rotate(2deg);  opacity: 1;  }
-            50%      { transform: scaleY(0.93) scaleX(1.07) rotate(-1deg); opacity: .8; }
-            75%      { transform: scaleY(1.18) scaleX(0.83) rotate(3deg);  opacity: 1;  }
-        }
 
-        @keyframes flicker2 {
-            0%,100% { transform: scaleY(0.9)  scaleX(1.1)  rotate(2deg);  opacity: .85; }
-            33%      { transform: scaleY(1.22) scaleX(0.8)  rotate(-3deg); opacity: 1;   }
-            66%      { transform: scaleY(0.82) scaleX(1.14) rotate(1deg);  opacity: .75; }
-        }
-
-        .f1 { animation: flicker  0.60s ease-in-out infinite;       transform-origin: bottom center; }
-        .f2 { animation: flicker2 0.50s ease-in-out infinite;       transform-origin: bottom center; }
-        .f3 { animation: flicker  0.72s ease-in-out infinite 0.18s; transform-origin: bottom center; }
-        .f4 { animation: flicker2 0.55s ease-in-out infinite 0.10s; transform-origin: bottom center; }
 
         /* Ground fire glow */
         .ground-glow {
@@ -407,37 +390,37 @@
                 <!-- Torch 1 -->
                 <g transform="translate(190,140)">
                     <rect x="-2.5" y="0" width="5" height="14" rx="1" fill="#5a3d1e"/>
-                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000" class="f1"/>
-                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" class="f2" opacity=".85"/>
-                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" class="f1" opacity=".6"/>
+                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000"/>
+                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" opacity=".85"/>
+                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" opacity=".6"/>
                 </g>
                 <!-- Torch 2 -->
                 <g transform="translate(340,135)">
                     <rect x="-2.5" y="0" width="5" height="14" rx="1" fill="#5a3d1e"/>
-                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000" class="f3"/>
-                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" class="f4" opacity=".85"/>
-                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" class="f3" opacity=".6"/>
+                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000"/>
+                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" opacity=".85"/>
+                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" opacity=".6"/>
                 </g>
                 <!-- Torch 3 (center, largest) -->
                 <g transform="translate(480,130)">
                     <rect x="-3" y="0" width="6" height="16" rx="1" fill="#5a3d1e"/>
-                    <ellipse cx="0" cy="-7"  rx="6.5" ry="11"  fill="#e85000" class="f2"/>
-                    <ellipse cx="0" cy="-12" rx="4"   ry="8"   fill="#ffd000" class="f1" opacity=".85"/>
-                    <ellipse cx="0" cy="-17" rx="2"   ry="4.5" fill="#fff8e0" class="f4" opacity=".65"/>
+                    <ellipse cx="0" cy="-7"  rx="6.5" ry="11"  fill="#e85000"/>
+                    <ellipse cx="0" cy="-12" rx="4"   ry="8"   fill="#ffd000" opacity=".85"/>
+                    <ellipse cx="0" cy="-17" rx="2"   ry="4.5" fill="#fff8e0" opacity=".65"/>
                 </g>
                 <!-- Torch 4 -->
                 <g transform="translate(620,135)">
                     <rect x="-2.5" y="0" width="5" height="14" rx="1" fill="#5a3d1e"/>
-                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000" class="f4"/>
-                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" class="f3" opacity=".85"/>
-                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" class="f2" opacity=".6"/>
+                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000"/>
+                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" opacity=".85"/>
+                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" opacity=".6"/>
                 </g>
                 <!-- Torch 5 -->
                 <g transform="translate(770,140)">
                     <rect x="-2.5" y="0" width="5" height="14" rx="1" fill="#5a3d1e"/>
-                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000" class="f1"/>
-                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" class="f2" opacity=".85"/>
-                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" class="f3" opacity=".6"/>
+                    <ellipse cx="0" cy="-6"  rx="5"   ry="9"   fill="#e85000"/>
+                    <ellipse cx="0" cy="-10" rx="3"   ry="6.5" fill="#ffd000" opacity=".85"/>
+                    <ellipse cx="0" cy="-13" rx="1.5" ry="3.5" fill="#fff8e0" opacity=".6"/>
                 </g>
 
                 <!-- Fire glow on ground beneath the structure -->
