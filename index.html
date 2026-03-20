@@ -1,28 +1,46 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8"><title>Via Romana | Das Imperium der Sprache</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Romana | Latein spielerisch meistern</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com');
         .font-roman { font-family: 'Cinzel', serif; }
-        body { font-family: 'Libre Baskerville', serif; background: #fdfaf3; }
-        .hero { background: linear-gradient(rgba(44,4,4,0.8), rgba(44,4,4,0.8)), url('https://images.unsplash.com'); background-size: cover; }
+        body { font-family: 'Libre Baskerville', serif; background-color: #fdfaf3; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com'); background-size: cover; background-position: center; }
     </style>
 </head>
-<body>
-    <header class="hero h-screen flex flex-col items-center justify-center text-white text-center px-4">
-        <h1 class="text-6xl md:text-8xl font-roman mb-6 tracking-tighter text-yellow-500">VIA ROMANA</h1>
-        <p class="text-xl md:text-2xl max-w-2xl italic mb-12">Handeln wie Crassus, sprechen wie Cicero. Das erste Monopoly, das Latein lebendig macht.</p>
-        <div class="flex gap-4">
-            <a href="https://play.viaromana.alexgamingdev.me" class="bg-yellow-600 px-8 py-3 rounded font-bold hover:bg-yellow-500 transition">JETZT SPIELEN</a>
-            <a href="#info" class="border border-white px-8 py-3 rounded font-bold hover:bg-white/10 transition">MEHR ERFAHREN</a>
+<body class="text-stone-900">
+    <!-- Hero Section -->
+    <header class="hero h-[80vh] flex flex-col items-center justify-center text-center text-white px-6">
+        <h1 class="text-6xl md:text-8xl font-roman mb-4 tracking-widest text-amber-500">VIA ROMANA</h1>
+        <p class="text-xl md:text-2xl max-w-2xl italic mb-10 leading-relaxed">Das erste strategische Handelsspiel, das die Sprache der Caesaren lebendig macht.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="play/" class="bg-red-900 hover:bg-red-800 text-white px-10 py-4 rounded font-bold tracking-widest transition shadow-2xl">LUDUS (SPIELEN)</a>
+            <a href="magister/" class="bg-white/10 hover:bg-white/20 border border-white px-10 py-4 rounded font-bold tracking-widest transition">MAGISTER (LEHRER)</a>
         </div>
     </header>
-    <section id="info" class="py-20 max-w-5xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
-        <div><h3 class="font-roman text-red-900 text-xl mb-2">SPIELPRINZIP</h3><p class="text-sm">Erwerbe Foren, Thermen und Villen durch taktisches Geschick und Sprachwissen.</p></div>
-        <div><h3 class="font-roman text-red-900 text-xl mb-2">BILDUNG</h3><p class="text-sm">Integrierte Vokabel-Abfragen und Grammatik-Herausforderungen für Schüler.</p></div>
-        <div><h3 class="font-roman text-red-900 text-xl mb-2">STRATEGIE</h3><p class="text-sm">Ein Proof-of-Concept für moderne Gamification im altsprachlichen Unterricht.</p></div>
+
+    <!-- Content -->
+    <section class="max-w-5xl mx-auto py-20 px-8 grid md:grid-cols-2 gap-16 items-center">
+        <div>
+            <h2 class="text-4xl font-roman text-red-950 mb-6 uppercase tracking-wider">Ein Brettspiel für die Zukunft</h2>
+            <p class="text-lg text-stone-700 leading-relaxed mb-6">
+                Wir digitalisieren das klassische "Monopoly"-Prinzip für den Lateinunterricht. Spieler errichten Imperien auf dem Forum Romanum, während sie spielerisch Deklinationen und Vokabelschätze meistern.
+            </p>
+            <div class="border-l-4 border-amber-500 pl-6 italic text-stone-500">
+                "Entwickelt von Schülern für Schüler – mit Fokus auf Gamification und echte Lernerfolge."
+            </div>
+        </div>
+        <div class="bg-stone-200 h-80 rounded-lg flex items-center justify-center text-stone-400 font-roman border-2 border-dashed border-stone-300">
+            [ HIER SPIEL-SCREENSHOT EINFÜGEN ]
+        </div>
     </section>
+
+    <footer class="bg-red-950 text-white/50 py-10 text-center font-roman tracking-widest text-sm border-t-4 border-amber-600">
+        © MMXXVI VIA ROMANA TEAM | alexgamingdev.me
+    </footer>
 </body>
 </html>
