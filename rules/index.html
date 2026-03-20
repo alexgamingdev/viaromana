@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regeln | Via Romana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com');
+        .font-roman { font-family: 'Cinzel', serif; }
+        body { font-family: 'Libre Baskerville', serif; background-color: #fdfaf3; }
+        .rule-card { border-left: 4px solid #721c24; background: white; transition: transform 0.2s; }
+        .rule-card:hover { transform: translateX(10px); }
+    </style>
+</head>
+<body class="text-stone-900">
+
+    <!-- Navigation -->
+    <nav class="p-6 bg-white border-b border-stone-200 flex justify-between items-center sticky top-0 z-50">
+        <a href="../" class="font-roman text-red-900 font-bold tracking-tighter">← VIA ROMANA</a>
+        <span class="text-xs font-roman tracking-widest text-stone-400">CODEX REGULARUM</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="py-16 bg-red-950 text-white text-center">
+        <h1 class="text-4xl md:text-6xl font-roman mb-4 uppercase">Die Gesetze Roms</h1>
+        <p class="text-stone-300 italic">Wie man Imperator der Sprache wird.</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-16 px-6">
+        
+        <!-- Regel 1: Das Ziel -->
+        <section class="mb-12 rule-card p-8 shadow-sm">
+            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">I. Das Ziel des Spiels</h2>
+            <p class="leading-relaxed">
+                Ziel von <strong>Via Romana</strong> ist es, durch klugen Handel mit römischen Provinzen und Gebäuden das größte Vermögen (Sesterzen) anzuhäufen. Der Sieg wird jedoch nur dem zuteil, der seine <strong>Grammatik-Punkte</strong> (Points of Eloquence) stabil hält. Wer bankrott geht oder sein sprachliches Ansehen verliert, scheidet aus.
+            </p>
+        </section>
+
+        <!-- Regel 2: Der Spielzug -->
+        <section class="mb-12 rule-card p-8 shadow-sm">
+            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">II. Der Spielzug & Latein-Checks</h2>
+            <p class="mb-4">Ein Spieler würfelt und zieht über die <em>Via</em>. Landet er auf einem freien Feld, kann er es kaufen – aber nur nach bestandenem <strong>„Interrogatio“</strong> (Vokabeltest).</p>
+            <ul class="list-disc pl-6 space-y-2 text-stone-600">
+                <li><strong>Kauf:</strong> Übersetze den Namen des Ortes und eine kurze Phrase korrekt.</li>
+                <li><strong>Miete:</strong> Landest du bei Gegnern, zahlst du Sesterzen. Die Miete sinkt, wenn du die Vokabel des Feldes konjugieren kannst.</li>
+            </ul>
+        </section>
+
+        <!-- Regel 3: Foren & Thermen -->
+        <section class="mb-12 rule-card p-8 shadow-sm">
+            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">III. Bauwerke (Domus & Villae)</h2>
+            <p>Hast du alle Straßen einer Farbgruppe (z.B. <em>Forum Romanum</em>), darfst du Häuser (Tabernae) und später Villen bauen. Jedes Gebäude erhöht die Miete und den Schwierigkeitsgrad der Latein-Aufgaben für deine Gegner.</p>
+        </section>
+
+        <!-- Regel 4: Ereignisse -->
+        <section class="mb-12 rule-card p-8 shadow-sm">
+            <h2 class="text-2xl font-roman text-red-900 mb-4 tracking-wide">IV. Fortuna & Fatum</h2>
+            <p>Anstatt Gemeinschafts- und Ereigniskarten gibt es bei uns <strong>Fortuna</strong> (Glück) und <strong>Fatum</strong> (Schicksal). Diese Karten enthalten historische Ereignisse wie den Ausbruch des Vesuvs oder politische Intrigen im Senat.</p>
+        </section>
+
+        <!-- Call to Action -->
+        <div class="text-center mt-20">
+            <p class="mb-6 font-roman text-stone-400 uppercase tracking-widest text-sm">Bereit für die erste Runde?</p>
+            <a href="../play/" class="inline-block bg-red-900 text-white px-12 py-4 font-roman font-bold hover:bg-red-800 transition shadow-lg">AD LUDUM! (ZUM SPIEL)</a>
+        </div>
+
+    </main>
+
+    <footer class="py-10 text-center text-stone-400 text-xs font-roman border-t border-stone-200">
+        VIA ROMANA | REGELWERK VERSION 1.0.42
+    </footer>
+
+</body>
+</html>
